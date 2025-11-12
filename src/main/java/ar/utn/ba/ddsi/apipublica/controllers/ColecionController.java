@@ -1,9 +1,10 @@
 package ar.utn.ba.ddsi.apipublica.controllers;
 
 
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
-import ar.utn.ba.ddsi.apipublica.models.entities.EnumModoNavegacion;
 import ar.utn.ba.ddsi.apipublica.services.ColeccionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,56 +24,28 @@ public class ColecionController {
     }
 
     @GetMapping("/{coleccionID}/hechos")
-    public ResponseEntity<List<Hecho>> getHechosByColeccion(
+    public ResponseEntity<Object> listarHechosDeUnaColeccion(
             @PathVariable("coleccionID") Long coleccionID,
-            @RequestParam(required = false) EnumModoNavegacion modoNavegacion
-    )
-    {
-        List<Hecho> hechos = coleccionService.getHechosByColeccionAndModo(coleccionID, modoNavegacion);
-        if (hechos == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(hechos);
-    }
-
-    @GetMapping("/{coleccionID}/hechos/filtrar")
-    public ResponseEntity<List<Hecho>> filtrarHechos(
-            @PathVariable("coleccionID") Long coleccionID,
-            @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) String etiqueta,
-            @RequestParam(required = false) String fechaDesde,
-            @RequestParam(required = false) String fechaHasta,
-            @RequestParam(required = false) Long fuenteId
+            @RequestParam(required = false) String modoNavegacion,
+            @RequestParam(value = "categoria", required = false) String categoria,
+            @RequestParam(value = "fecha_reporte_desde", required = false) String fechaReporteDesde,
+            @RequestParam(value = "fecha_reporte_hasta", required = false) String fechaReporteHasta,
+            @RequestParam(value = "fecha_acontecimiento_desde", required = false) String fechaAcontecimientoDesde,
+            @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
+            @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
+            @RequestParam(value = "ubicacion_longitud", required = false) String lonStr
     ) {
-        List<InterfaceCondicion> condiciones = new ArrayList<>();
-
-        if (titulo != null && !titulo.isBlank()) {
-            condiciones.add(new CondicionTitulo(titulo));
-        }
-        if (categoria != null && !categoria.isBlank()) {
-            condiciones.add(new CondicionCategoria(new Categoria(categoria)));
-        }
-        if (etiqueta != null && !etiqueta.isBlank()) {
-            condiciones.add(new CondicionEtiqueta(new Etiqueta(etiqueta)));
-        }
+        HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr);
 
         try {
-            LocalDate desde = fechaDesde != null ? LocalDate.parse(fechaDesde) : null;
-            LocalDate hasta = fechaHasta != null ? LocalDate.parse(fechaHasta) : null;
-            if (desde != null || hasta != null) {
-                condiciones.add(new CondicionFechaRango(desde, hasta));
-            }
+            List<Hecho> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
+            return ResponseEntity.status(HttpStatus.OK).body(resultados);
+
+        } catch (IllegalArgumentException iae) {
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
         }
-
-        if (fuenteId != null) {
-            Fuente f = new Fuente();
-            f.setId(fuenteId);
-            condiciones.add(new CondicionOrigen(f));
-        }
-
-        List<Hecho> result = coleccionService.filtrarHechosConCondiciones(coleccionID, condiciones);
-        if (result == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(400).body("Error en los parámetros de búsqueda.");
     }
 }

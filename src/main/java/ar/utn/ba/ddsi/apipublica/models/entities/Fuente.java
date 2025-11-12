@@ -3,28 +3,32 @@ package ar.utn.ba.ddsi.apipublica.models.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "fuente")
 public class Fuente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idFuente;
-
+    private long idFuente;
+    @Column(nullable = false)
     private String nombre;
+    @Column(nullable = false)
     private String url;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EnumTipoFuente tipoFuente;
 
-    public Fuente() {}
-
-    public Fuente(Long id,String nombre, String url, EnumTipoFuente tipoFuente) {
+    public Fuente(long id, String nombre, String url, EnumTipoFuente tipoFuente) {
         this.idFuente = id;
         this.nombre = nombre;
         this.url = url;
-        this.tipoFuente = tipoFuente;}
-
-    public Long getId() {
-        return this.idFuente;
+        this.tipoFuente = tipoFuente;
     }
-    public void setId(Long id) { this.idFuente = id; }
+    public Fuente() {
+    }
+    public long getIdFuente() {
+        return idFuente;
+    }
+    public void setIdFuente(long idFuente) {
+        this.idFuente = idFuente;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -32,8 +36,7 @@ public class Fuente {
         this.nombre = nombre;
     }
     public String getUrl() {
-        return url;
-    }
+        return url;}
     public void setUrl(String url) {
         this.url = url;
     }
@@ -41,6 +44,6 @@ public class Fuente {
         return tipoFuente;
     }
     public void setTipoFuente(EnumTipoFuente tipoFuente) {
-        this.tipoFuente = tipoFuente;
-    }
+        this.tipoFuente = tipoFuente;}
+
 }

@@ -1,14 +1,24 @@
 package ar.utn.ba.ddsi.apipublica.models.entities;
 
-public class CondicionCategoria implements InterfaceCondicion {
-    private Categoria categoria;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    public CondicionCategoria() {}
-    public CondicionCategoria(Categoria categoria) { this.categoria = categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@DiscriminatorValue("categoria")
+public class CondicionCategoria extends InterfaceCondicion {
+    private String nombre; // creo que es mas sencillo asi
 
     @Override
     public boolean cumpleCondicion(Hecho hecho) {
-        return hecho.getCategoria() != null && hecho.getCategoria().getNombre().equals(this.categoria.getNombre());
+        return hecho.getCategoria().getNombre().equals(nombre);
     }
 }
+

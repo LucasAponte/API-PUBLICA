@@ -3,6 +3,8 @@ package ar.utn.ba.ddsi.apipublica.models.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,12 +15,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("etiqueta")
-public class CondicionEtiqueta extends InterfaceCondicion {
-    private String nombre;
+@DiscriminatorValue("fuente")
+public class CondicionFuente extends InterfaceCondicion {
+
+    @ManyToOne
+    @JoinColumn(name = "fuente_id_fuente")
+    private Fuente fuente;
 
     @Override
     public boolean cumpleCondicion(Hecho hecho) {
-        return hecho.getEtiqueta().getNombre().equals(nombre);
+        return fuente.equals(hecho.getFuente());
     }
 }

@@ -1,14 +1,23 @@
 package ar.utn.ba.ddsi.apipublica.models.entities;
 
-public class CondicionTitulo implements InterfaceCondicion {
-    private String titulo;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    public CondicionTitulo() {}
-    public CondicionTitulo(String titulo) { this.titulo = titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@DiscriminatorValue("titulo")
+public class CondicionTitulo extends InterfaceCondicion {
+    private String titulo;
 
     @Override
     public boolean cumpleCondicion(Hecho hecho) {
-        return hecho.getTitulo() != null && hecho.getTitulo().equals(this.titulo);
+        return hecho.getTitulo().equals(this.titulo);
     }
 }

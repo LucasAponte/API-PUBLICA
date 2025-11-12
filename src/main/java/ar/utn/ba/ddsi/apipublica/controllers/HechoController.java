@@ -1,25 +1,23 @@
 package ar.utn.ba.ddsi.apipublica.controllers;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoCreateDTO;
-import ar.utn.ba.ddsi.apipublica.models.entities.Coleccion;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
-import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
-import ar.utn.ba.ddsi.apipublica.models.repository.HechoRepository;
+import ar.utn.ba.ddsi.apipublica.services.IHechoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/hechos")
 public class HechoController {
 
-    private final HechoRepository hechoRepository;
-    private final ColeccionRepository coleccionRepository;
+    private final IHechoService hechoService;
 
-    public HechoController(HechoRepository hechoRepository, ColeccionRepository coleccionRepository) {
-        this.hechoRepository = hechoRepository;
-        this.coleccionRepository = coleccionRepository;
+    public HechoController(IHechoService hechoService) {
+        this.hechoService = hechoService;
     }
 
     @PostMapping//ResponseEntity???
@@ -28,18 +26,35 @@ public class HechoController {
             return ResponseEntity.badRequest().body("Titulo es obligatorio");
         }
         try {
-            Hecho hecho = new Hecho();
-            hecho.setTitulo(dto.getTitulo());
-            hecho.cambiarDescripcion(dto.getDescripcion());
-            if (dto.getFecha() != null && !dto.getFecha().isBlank()) {
-                hecho.setFecha(LocalDate.parse(dto.getFecha()));
-            }
-
-            Hecho saved = hechoRepository.save(hecho);
-            return ResponseEntity.ok(saved);
+            Hecho hecho = hechoService.crearHecho(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(hecho);
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Error creando hecho: " + ex.getMessage());
         }
     }
-}
 
+    //GET /hechos con filtros por query params
+    @GetMapping
+    public ResponseEntity<?> listarHechosSegun(
+            @RequestParam(value = "categoria", required = false) String categoria,
+            @RequestParam(value = "fecha_reporte_desde", required = false) String fechaReporteDesde,
+            @RequestParam(value = "fecha_reporte_hasta", required = false) String fechaReporteHasta,
+            @RequestParam(value = "fecha_acontecimiento_desde", required = false) String fechaAcontecimientoDesde,
+            @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
+            @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
+            @RequestParam(value = "ubicacion_longitud", required = false) String lonStr
+    ) {
+        HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr);
+
+        try {
+            List<Hecho> resultados = hechoService.buscarConFiltro(filter);
+            return ResponseEntity.status(HttpStatus.OK).body(resultados);
+
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.badRequest().body(iae.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
+        }
+    }
+}

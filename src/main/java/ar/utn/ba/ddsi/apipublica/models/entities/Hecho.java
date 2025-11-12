@@ -1,69 +1,53 @@
 package ar.utn.ba.ddsi.apipublica.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@Setter
+@Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "hecho")
 public class Hecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idHecho;
-
+    private Long id_hecho;
+    //getters y setters
+    @Column(name = "titulo")
     private String titulo;
+    @Column(name="descripcion",length = 1000)
     private String descripcion;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Categoria categoria;
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
+    @Column(name = "fechaCarga", nullable = false)
     private LocalDate fechaDeCarga;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Ubicacion lugarDeOcurrencia;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Fuente fuente;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    private Ubicacion ubicacion;
+    @ManyToOne
     private Etiqueta etiqueta;
-    private boolean visibilidad = true;
+    @Enumerated(EnumType.STRING)
+    private EnumTipoHecho tipoHecho;
+    @OneToMany
+    private List<Adjunto> adjuntos;
 
-    public Hecho() {
-        // constructor por defecto requerido por JPA
-    }
-    public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion lugarDeOcurrencia, LocalDate fecha) {
+    public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion ubicacion, LocalDate fecha, Fuente fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
-        this.lugarDeOcurrencia = lugarDeOcurrencia;
+        this.ubicacion = ubicacion;
         this.fecha = fecha;
+        this.fechaDeCarga = LocalDate.now();
+        this.etiqueta = null;
+        this.fuente = fuente;
     }
-
-    public Long getId() { return this.idHecho; }
-
-    public String getTitulo() {return titulo;}
-    public void setTitulo(String titulo) {this.titulo= titulo;}
-    public void cambiarDescripcion(String descripcion) {this.descripcion = descripcion;}
-    public Categoria getCategoria() {return categoria;}
-    public void cambiarCategoria(String categoria) {this.categoria.setNombre(categoria);}
-    public Etiqueta getEtiqueta() {return etiqueta;}
-    public void cambiarEtiqueta(String etiqueta) {this.etiqueta.setNombre(etiqueta);}
-
-    //Así me vendría la info, en String?
-    public void cambiarUbicacion(String dato, String dato1) {
-        float nuevaLatitud = Float.parseFloat(dato);
-        float nuevaLongitud = Float.parseFloat(dato1);
-        lugarDeOcurrencia.setUbicacion(nuevaLatitud,nuevaLongitud);
-    }
-
-    //string a fecha??
-    public LocalDate getFecha() {return fecha;}
-
-    public void setFecha(LocalDate fecha) {this.fecha = fecha;}
-
-    public LocalDate getFechaDeCarga() {return fechaDeCarga;}
-    public void setFechaDeCarga(LocalDate fechaDeCarga) {this.fechaDeCarga = fechaDeCarga;}
-
-    public Boolean esVisible() {return visibilidad;}
-    public void cambiarVisibilidad() {visibilidad = true;} //asi por el momento
-
-    public Fuente getFuente() {return this.fuente;}
 
 }

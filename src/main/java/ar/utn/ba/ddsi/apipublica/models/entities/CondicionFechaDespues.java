@@ -8,17 +8,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("etiqueta")
-public class CondicionEtiqueta extends InterfaceCondicion {
-    private String nombre;
+@DiscriminatorValue("fechaDespues")
+public class CondicionFechaDespues extends InterfaceCondicion {
+    private LocalDate fechaDespues;
 
     @Override
     public boolean cumpleCondicion(Hecho hecho) {
-        return hecho.getEtiqueta().getNombre().equals(nombre);
+        return hecho.getFecha().isAfter(fechaDespues);
     }
 }
+

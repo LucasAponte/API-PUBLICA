@@ -1,12 +1,14 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.entities.FiltradorDeHechos;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
 import ar.utn.ba.ddsi.apipublica.models.repository.HechoRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -21,36 +23,41 @@ public class ColeccionService {
         this.filtradorDeHechos = filtradorDeHechos;
     }
 
-    public List<Hecho> getHechosByColeccionId(Long id) {
-        Coleccion coleccion = coleccionRepository.findById(id).orElse(null);
-        if (coleccion == null) return null;
-        return coleccion.getHechos();
-    }
+    // Nuevo: buscar hechos de una colección delegando al repository con parámetros parsed del DTO
+    public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
+        if (filter == null) filter = new HechoFilterDTO();
 
-
-    public List<Hecho> getHechosByColeccionAndModo(Long coleccionId, EnumModoNavegacion modo) {
-        var coleccion = coleccionRepository.findById(coleccionId).orElse(null);
-        if (coleccion == null) return null;
-
-        // Interpretar null/empty como NOCURADO
-        if (modo == null || modo == EnumModoNavegacion.NOCURADO) {
-            return coleccion.getHechos();
+        // Normalizar categoria
+        String categoriaNombre = null;
+        if (filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
+            categoriaNombre = filter.getCategoria(); //Debería ser categori.trim???
         }
 
-        // Si es CURADO, aplicar algoritmo de consenso si existe
-        if (modo == EnumModoNavegacion.CURADO) {
-            if (coleccion.obtenerHechosConsensuados() != null) {
-                return coleccion.obtenerHechosConsensuados();
-            }
-            return coleccion.getHechos();
+        LocalDate repDesde = null, repHasta = null, acaDesde = null, acaHasta = null;
+        try {
+            if (filter.getFechaReporteDesde() != null && !filter.getFechaReporteDesde().isBlank()) repDesde = LocalDate.parse(filter.getFechaReporteDesde());
+            if (filter.getFechaReporteHasta() != null && !filter.getFechaReporteHasta().isBlank()) repHasta = LocalDate.parse(filter.getFechaReporteHasta());
+            if (filter.getFechaAcontecimientoDesde() != null && !filter.getFechaAcontecimientoDesde().isBlank()) acaDesde = LocalDate.parse(filter.getFechaAcontecimientoDesde());
+            if (filter.getFechaAcontecimientoHasta() != null && !filter.getFechaAcontecimientoHasta().isBlank()) acaHasta = LocalDate.parse(filter.getFechaAcontecimientoHasta());
+        } catch (DateTimeParseException dte) {
+            throw new IllegalArgumentException("Formato de fecha inválido. Use yyyy-MM-dd");
         }
 
-        return coleccion.getHechos();
-    }
+        Float lat = null, lon = null;
+        try {
+            if (filter.getUbicacionLatitud() != null && !filter.getUbicacionLatitud().isBlank()) lat = Float.parseFloat(filter.getUbicacionLatitud());
+            if (filter.getUbicacionLongitud() != null && !filter.getUbicacionLongitud().isBlank()) lon = Float.parseFloat(filter.getUbicacionLongitud());
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("Latitud o longitud invalida");
+        }
 
-    public List<Hecho> filtrarHechosConCondiciones(Long coleccionId, List<InterfaceCondicion> condiciones) {
-        var coleccion = coleccionRepository.findById(coleccionId).orElse(null);
-        if (coleccion == null) return null;
-        return filtradorDeHechos.devolverHechosAPartirDe(condiciones, coleccion.getHechos());
+        // Determinar si debemos filtrar solo consensuados (modo CURADO)
+        Boolean curado = Boolean.FALSE; // null = no filtrar por consensuado
+        if (modoDeNavegacion != null && modoDeNavegacion.equalsIgnoreCase("CURADO")) {
+            curado = Boolean.TRUE;
+        }
+
+        // Delegar al repository que arma la consulta en la DB
+        return coleccionRepository.buscarEnColeccionSegun(coleccionId, categoriaNombre, repDesde, repHasta, acaDesde, acaHasta, lat, lon, curado);
     }
 }
