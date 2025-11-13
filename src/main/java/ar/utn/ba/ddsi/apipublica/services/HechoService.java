@@ -101,8 +101,7 @@ public class HechoService implements IHechoService {
                 throw new IllegalArgumentException("Tipo de hecho inválido: " + dto.getTipoHecho());
             }
         }
-
-        // Adjuntos: crear uno por cada URL/entrada
+        //PROBAR ESTO
         List<Adjunto> listaAdjuntos = new ArrayList<>();
         if (dto.getAdjuntos() != null) {
             for (String a : dto.getAdjuntos()) {
@@ -128,30 +127,23 @@ public class HechoService implements IHechoService {
             return hechoRepository.findAll();
         }
 
+        // Validar y parsear usando el DTO
+        filter.validateAndParse();
+
         String categoriaNombre = null;
         if(filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
             categoriaNombre = filter.getCategoria();
         }
 
-        LocalDate repDesde = null, repHasta = null, acaDesde = null, acaHasta = null;
-        try {
-            if (filter.getFechaReporteDesde() != null && !filter.getFechaReporteDesde().isBlank()) repDesde = LocalDate.parse(filter.getFechaReporteDesde());
-            if (filter.getFechaReporteHasta() != null && !filter.getFechaReporteHasta().isBlank()) repHasta = LocalDate.parse(filter.getFechaReporteHasta());
-            if (filter.getFechaAcontecimientoDesde() != null && !filter.getFechaAcontecimientoDesde().isBlank()) acaDesde = LocalDate.parse(filter.getFechaAcontecimientoDesde());
-            if (filter.getFechaAcontecimientoHasta() != null && !filter.getFechaAcontecimientoHasta().isBlank()) acaHasta = LocalDate.parse(filter.getFechaAcontecimientoHasta());
-        } catch (DateTimeParseException dte) {
-            //VER Formato de fecha inválido
-            throw new IllegalArgumentException("Formato de fecha inválido. Use yyyy-MM-dd");
-        }
-
-        Float lat = null, lon = null;
-        try {
-            if (filter.getUbicacionLatitud() != null && !filter.getUbicacionLatitud().isBlank()) lat = Float.parseFloat(filter.getUbicacionLatitud());
-            if (filter.getUbicacionLongitud() != null && !filter.getUbicacionLongitud().isBlank()) lon = Float.parseFloat(filter.getUbicacionLongitud());
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("Latitud o longitud invalida");
-        }
-        //VER le mando solo la categoria nombre no el id
-        return hechoRepository.buscarHechosSegun(categoriaNombre, repDesde, repHasta, acaDesde, acaHasta, lat, lon);
+        // Usar campos parseados
+        return hechoRepository.buscarHechosSegun(
+                categoriaNombre,
+                filter.getFechaReporteDesdeParsed(),
+                filter.getFechaReporteHastaParsed(),
+                filter.getFechaAcontecimientoDesdeParsed(),
+                filter.getFechaAcontecimientoHastaParsed(),
+                filter.getUbicacionLatitudParsed(),
+                filter.getUbicacionLongitudParsed()
+        );
     }
 }

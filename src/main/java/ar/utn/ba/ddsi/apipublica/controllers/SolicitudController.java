@@ -21,6 +21,7 @@ public class SolicitudController {
     @PostMapping
     public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudCreateDTO dto) {
         try {
+            //ACÄ funca pero debería poder controlar si esiste o no el idcontribuyente por ahora safa
             SolicitudEliminacion solicitud = solicitudService.crearSolicitud(dto);
             return ResponseEntity.ok(solicitud);
         } catch (IllegalArgumentException ex) {

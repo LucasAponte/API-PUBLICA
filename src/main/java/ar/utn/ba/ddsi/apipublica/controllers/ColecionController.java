@@ -43,9 +43,9 @@ public class ColecionController {
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
         } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
         }
-        return ResponseEntity.status(400).body("Error en los parámetros de búsqueda.");
     }
 }

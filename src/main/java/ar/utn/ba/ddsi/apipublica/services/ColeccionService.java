@@ -26,6 +26,10 @@ public class ColeccionService {
     // Nuevo: buscar hechos de una colección delegando al repository con parámetros parsed del DTO
     public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
         if (filter == null) filter = new HechoFilterDTO();
+        //ESta bien que siempre espere un coleccionId??
+        if(coleccionId==null && !(coleccionRepository.findById(coleccionId).isPresent())){
+            throw new IllegalArgumentException("El ID de la colección no puede ser nulo");
+        }
 
         // Normalizar categoria
         String categoriaNombre = null;
@@ -51,7 +55,9 @@ public class ColeccionService {
             throw new IllegalArgumentException("Latitud o longitud invalida");
         }
 
-        // Determinar si debemos filtrar solo consensuados (modo CURADO)
+        if(!(modoDeNavegacion == "CURADO" || modoDeNavegacion=="NOCURADO")) {
+            throw new IllegalArgumentException("Modo Navegacion incorrecto");
+        }
         Boolean curado = Boolean.FALSE; // null = no filtrar por consensuado
         if (modoDeNavegacion != null && modoDeNavegacion.equalsIgnoreCase("CURADO")) {
             curado = Boolean.TRUE;
