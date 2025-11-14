@@ -133,7 +133,12 @@ public class HechoService implements IHechoService {
 
         String categoriaNombre = null;
         if(filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
-            categoriaNombre = filter.getCategoria();
+            categoriaNombre = filter.getCategoria().trim();
+        }
+
+        String textoLibre = null;
+        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
+            textoLibre = filter.getTextoLibre().trim();
         }
 
         // Usar campos parseados
@@ -144,12 +149,9 @@ public class HechoService implements IHechoService {
                 filter.getFechaAcontecimientoDesdeParsed(),
                 filter.getFechaAcontecimientoHastaParsed(),
                 filter.getUbicacionLatitudParsed(),
-                filter.getUbicacionLongitudParsed()
+                filter.getUbicacionLongitudParsed(),
+                textoLibre
         );
-         resultados.add(new Hecho("titulo1", "desc1", new Categoria("cat1"),
-                new Ubicacion(5.75f,5.75f,new Provincia("BsAs","ARg")),
-                LocalDate.now(),new Fuente(5,"fuente xd","urlxd",EnumTipoFuente.DINAMICA)) ) ;
-
-         return  resultados;
+        return resultados;
     }
 }

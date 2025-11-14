@@ -42,10 +42,11 @@ public class HechoController {
             @RequestParam(value = "fecha_acontecimiento_desde", required = false) String fechaAcontecimientoDesde,
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
             @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
-            @RequestParam(value = "ubicacion_longitud", required = false) String lonStr
+            @RequestParam(value = "ubicacion_longitud", required = false) String lonStr,
+            @RequestParam(value = "q", required = false) String textoLibre
     ) {
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
-                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr);
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre);
 
         try {
             List<Hecho> resultados = hechoService.buscarConFiltro(filter);
