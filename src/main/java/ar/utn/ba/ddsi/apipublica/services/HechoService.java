@@ -85,7 +85,8 @@ public class HechoService implements IHechoService {
             try {
                 float lat = Float.parseFloat(dto.getUbicacionLat());
                 float lon = Float.parseFloat(dto.getUbicacionLon());
-                Ubicacion u = new Ubicacion(lat, lon);
+                // Crear y guardar provincia con un genrador
+                Ubicacion u = new Ubicacion(lat, lon,new Provincia("as","eeee"));
                 hecho.setUbicacion(ubicacionRepository.save(u));
             } catch (NumberFormatException nfe) {
                 throw new IllegalArgumentException("Latitud o longitud inválida");
@@ -136,7 +137,7 @@ public class HechoService implements IHechoService {
         }
 
         // Usar campos parseados
-        return hechoRepository.buscarHechosSegun(
+        List<Hecho> resultados = hechoRepository.buscarHechosSegun(
                 categoriaNombre,
                 filter.getFechaReporteDesdeParsed(),
                 filter.getFechaReporteHastaParsed(),
@@ -145,5 +146,10 @@ public class HechoService implements IHechoService {
                 filter.getUbicacionLatitudParsed(),
                 filter.getUbicacionLongitudParsed()
         );
+         resultados.add(new Hecho("titulo1", "desc1", new Categoria("cat1"),
+                new Ubicacion(5.75f,5.75f,new Provincia("BsAs","ARg")),
+                LocalDate.now(),new Fuente(5,"fuente xd","urlxd",EnumTipoFuente.DINAMICA)) ) ;
+
+         return  resultados;
     }
 }

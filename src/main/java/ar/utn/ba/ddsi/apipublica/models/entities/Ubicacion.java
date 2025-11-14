@@ -1,9 +1,6 @@
 package ar.utn.ba.ddsi.apipublica.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Ubicacion {
@@ -12,10 +9,13 @@ public class Ubicacion {
     private long idUbicacion;
     private float latitud;
     private float longitud;
+    @ManyToOne
+    private Provincia provincia;
 
-    public Ubicacion(float latitud, float longitud) {
+    public Ubicacion(float latitud, float longitud,Provincia provincia) {
         this.latitud = latitud;
         this.longitud = longitud;
+        this.provincia=provincia;
     }
 
     public void setUbicacion(float newLatitud, float newLongitud) {
