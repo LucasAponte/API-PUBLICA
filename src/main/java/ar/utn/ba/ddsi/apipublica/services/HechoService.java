@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoCreateDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoRtaDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.*;
 import org.springframework.stereotype.Service;
@@ -119,13 +120,17 @@ public class HechoService implements IHechoService {
         hecho.setFechaDeCarga(LocalDate.now());
 
         // Guardar en la base de datos
+        //Deberìa mandarselo al Agregador de Hechos
         return hechoRepository.save(hecho);
     }
 
     @Override
-    public List<Hecho> buscarConFiltro(HechoFilterDTO filter) {
+    public List<HechoRtaDTO> buscarConFiltro(HechoFilterDTO filter) {
+        System.out.println("Buscando hechos con filtro");
+
         if (filter == null) {
-            return hechoRepository.findAll();
+            List<Hecho> all = hechoRepository.findAll();
+            return PasarAHechoDTO(all);
         }
 
         // Validar y parsear usando el DTO
@@ -136,6 +141,12 @@ public class HechoService implements IHechoService {
             categoriaNombre = filter.getCategoria();
         }
 
+        // Determinar delta para proximidad en grados (por defecto 0.01 ~ 1km)
+        Float delta = null;
+        if (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null) {
+            delta = 0.01f; // valor configurable si se desea
+        }
+
         // Usar campos parseados
         List<Hecho> resultados = hechoRepository.buscarHechosSegun(
                 categoriaNombre,
@@ -144,12 +155,24 @@ public class HechoService implements IHechoService {
                 filter.getFechaAcontecimientoDesdeParsed(),
                 filter.getFechaAcontecimientoHastaParsed(),
                 filter.getUbicacionLatitudParsed(),
-                filter.getUbicacionLongitudParsed()
+                filter.getUbicacionLongitudParsed(),
+                delta
         );
-         resultados.add(new Hecho("titulo1", "desc1", new Categoria("cat1"),
-                new Ubicacion(5.75f,5.75f,new Provincia("BsAs","ARg")),
-                LocalDate.now(),new Fuente(5,"fuente xd","urlxd",EnumTipoFuente.DINAMICA)) ) ;
-
-         return  resultados;
+        Hecho hecho = new Hecho("ehco de prueba","descripcion de prueba",new Categoria("categoria de prueba"),
+                new Ubicacion(10.0f,10.0f,new Provincia("as","eeee")),LocalDate.now(),new Fuente());
+        resultados.add(hecho);
+        System.out.println("Resultados encontrados: " + (resultados == null ? 0 : resultados.size()));
+        return PasarAHechoDTO(resultados);
+    }
+    public List<HechoRtaDTO> PasarAHechoDTO(List<Hecho> hechos) {
+        List<HechoRtaDTO> hechosDTO = new ArrayList<>();
+        if(hechos==null) return hechosDTO;
+        for(Hecho h : hechos) {
+            HechoRtaDTO dto = new HechoRtaDTO();
+            dto.HechoAHechoRtaDTO(h);
+            hechosDTO.add(dto);
+            System.out.println("Hecho convertido a DTO: " + dto);
+        }
+        return hechosDTO;
     }
 }

@@ -20,6 +20,8 @@ public class Categoria {
     }
     public String getNombre(){return this.nombre;}
     public void setNombre(String dato) {this.nombre = dato;}
+    public  long getIdCategoria(){return this.idCategoria;}
+
 
 
 }

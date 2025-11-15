@@ -2,68 +2,64 @@ package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
-import ar.utn.ba.ddsi.apipublica.models.entities.FiltradorDeHechos;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
-import ar.utn.ba.ddsi.apipublica.models.repository.HechoRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
 public class ColeccionService {
+    //No tengo el Filtrador de Hechos, asi que delego todo al Repository ESTARÁ BIEN?????
     private final ColeccionRepository coleccionRepository;
-    private final HechoRepository hechoRepository;
-    private final FiltradorDeHechos filtradorDeHechos;
 
-    public ColeccionService(ColeccionRepository coleccionRepository, HechoRepository hechoRepository, FiltradorDeHechos filtradorDeHechos) {
+    public ColeccionService(ColeccionRepository coleccionRepository) {
         this.coleccionRepository = coleccionRepository;
-        this.hechoRepository = hechoRepository;
-        this.filtradorDeHechos = filtradorDeHechos;
     }
 
     // Nuevo: buscar hechos de una colección delegando al repository con parámetros parsed del DTO
     public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
-        if (filter == null) filter = new HechoFilterDTO();
-        //ESta bien que siempre espere un coleccionId??
-        if(coleccionId==null && !(coleccionRepository.findById(coleccionId).isPresent())){
+        if (coleccionId == null) {
             throw new IllegalArgumentException("El ID de la colección no puede ser nulo");
         }
+        if (coleccionRepository.findById(coleccionId).isEmpty()) {
+            throw new IllegalArgumentException("Colección no existe: " + coleccionId);
+        }
+
+        if (filter == null) filter = new HechoFilterDTO();
+
+        // Validar y parsear el DTO (mueve la lógica de validación al propio DTO)
+        filter.validateAndParse();
 
         // Normalizar categoria
         String categoriaNombre = null;
         if (filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
-            categoriaNombre = filter.getCategoria(); //Debería ser categori.trim???
+            categoriaNombre = filter.getCategoria().trim();
         }
 
-        LocalDate repDesde = null, repHasta = null, acaDesde = null, acaHasta = null;
-        try {
-            if (filter.getFechaReporteDesde() != null && !filter.getFechaReporteDesde().isBlank()) repDesde = LocalDate.parse(filter.getFechaReporteDesde());
-            if (filter.getFechaReporteHasta() != null && !filter.getFechaReporteHasta().isBlank()) repHasta = LocalDate.parse(filter.getFechaReporteHasta());
-            if (filter.getFechaAcontecimientoDesde() != null && !filter.getFechaAcontecimientoDesde().isBlank()) acaDesde = LocalDate.parse(filter.getFechaAcontecimientoDesde());
-            if (filter.getFechaAcontecimientoHasta() != null && !filter.getFechaAcontecimientoHasta().isBlank()) acaHasta = LocalDate.parse(filter.getFechaAcontecimientoHasta());
-        } catch (DateTimeParseException dte) {
-            throw new IllegalArgumentException("Formato de fecha inválido. Use yyyy-MM-dd");
+        // Determinar delta si hay coordenadas
+        Float delta = null;
+        if (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null) {
+            delta = 0.01f; // tolerancia por defecto
         }
 
-        Float lat = null, lon = null;
-        try {
-            if (filter.getUbicacionLatitud() != null && !filter.getUbicacionLatitud().isBlank()) lat = Float.parseFloat(filter.getUbicacionLatitud());
-            if (filter.getUbicacionLongitud() != null && !filter.getUbicacionLongitud().isBlank()) lon = Float.parseFloat(filter.getUbicacionLongitud());
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("Latitud o longitud invalida");
+        Boolean curado = null; // null significa no filtrar por consensuado
+        if (modoDeNavegacion != null) {
+            if (modoDeNavegacion.equalsIgnoreCase("CURADO")) curado = Boolean.TRUE;
+            else if (modoDeNavegacion.equalsIgnoreCase("NOCURADO")) curado = Boolean.FALSE;
+            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);
         }
 
-        if(!(modoDeNavegacion == "CURADO" || modoDeNavegacion=="NOCURADO")) {
-            throw new IllegalArgumentException("Modo Navegacion incorrecto");
-        }
-        Boolean curado = Boolean.FALSE; // null = no filtrar por consensuado
-        if (modoDeNavegacion != null && modoDeNavegacion.equalsIgnoreCase("CURADO")) {
-            curado = Boolean.TRUE;
-        }
-
-        // Delegar al repository que arma la consulta en la DB
-        return coleccionRepository.buscarEnColeccionSegun(coleccionId, categoriaNombre, repDesde, repHasta, acaDesde, acaHasta, lat, lon, curado);
+        return coleccionRepository.buscarEnColeccionSegun(
+                coleccionId,
+                categoriaNombre,
+                filter.getFechaReporteDesdeParsed(),
+                filter.getFechaReporteHastaParsed(),
+                filter.getFechaAcontecimientoDesdeParsed(),
+                filter.getFechaAcontecimientoHastaParsed(),
+                filter.getUbicacionLatitudParsed(),
+                filter.getUbicacionLongitudParsed(),
+                delta,
+                curado
+        );
     }
 }

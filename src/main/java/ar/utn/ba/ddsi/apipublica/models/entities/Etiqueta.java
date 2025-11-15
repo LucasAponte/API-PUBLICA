@@ -18,4 +18,5 @@ public class Etiqueta {
 
     public String getNombre() {return nombre;}
     public void setNombre(String nombre) {this.nombre = nombre;}
+    public long getIdEtiqueta() {return idEtiqueta;}
 }

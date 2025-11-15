@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.apipublica.controllers;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoCreateDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoRtaDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.services.IHechoService;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class HechoController {
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr);
 
         try {
-            List<Hecho> resultados = hechoService.buscarConFiltro(filter);
+            List<HechoRtaDTO> resultados = hechoService.buscarConFiltro(filter);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
         } catch (IllegalArgumentException iae) {

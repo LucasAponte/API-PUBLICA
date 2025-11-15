@@ -12,14 +12,16 @@ import java.time.LocalDate;
 import java.util.List;
 @Repository
 public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
-    //Revisar Consulta
-    @Query("SELECT h FROM Hecho h " +
-            "WHERE (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
+    // Consulta que une con HechoXColeccion para filtrar por coleccion y opcionalmente por consensuado
+    @Query("SELECT h FROM HechoXColeccion hxc JOIN hxc.hecho h " +
+            "WHERE hxc.coleccion.id_coleccion = :coleccionId " +
+            "AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
             "AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde) " +
             "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
-            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :tol AND ABS(h.ubicacion.longitud - :lon) <= :tol))")
+            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta)) " +
+            "AND (:curado IS NULL OR hxc.consensuado = :curado)")
     List<Hecho> buscarEnColeccionSegun(
             @Param("coleccionId") Long coleccionId,
             @Param("categoriaNombre") String categoriaNombre,
@@ -29,6 +31,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("acaHasta") LocalDate acaHasta,
             @Param("lat") Float lat,
             @Param("lon") Float lon,
+            @Param("delta") Float delta,
             @Param("curado") Boolean curado
     );
 }

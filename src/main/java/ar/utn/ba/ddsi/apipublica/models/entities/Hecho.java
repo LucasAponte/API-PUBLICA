@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -37,7 +38,7 @@ public class Hecho {
     @Enumerated(EnumType.STRING)
     private EnumTipoHecho tipoHecho;
     @OneToMany
-    private List<Adjunto> adjuntos;
+    private List<Adjunto> adjuntos = new ArrayList<>();
 
     public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion ubicacion, LocalDate fecha, Fuente fuente) {
         this.titulo = titulo;
