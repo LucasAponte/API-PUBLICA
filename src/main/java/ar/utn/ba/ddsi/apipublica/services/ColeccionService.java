@@ -16,7 +16,6 @@ public class ColeccionService {
         this.coleccionRepository = coleccionRepository;
     }
 
-    // Nuevo: buscar hechos de una colección delegando al repository con parámetros parsed del DTO
     public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
         if (coleccionId == null) {
             throw new IllegalArgumentException("El ID de la colección no puede ser nulo");
@@ -47,6 +46,10 @@ public class ColeccionService {
             if (modoDeNavegacion.equalsIgnoreCase("CURADO")) curado = Boolean.TRUE;
             else if (modoDeNavegacion.equalsIgnoreCase("NOCURADO")) curado = Boolean.FALSE;
             else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);
+        String textoLibre = null;
+        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
+            textoLibre = filter.getTextoLibre().trim();
+  
         }
 
         return coleccionRepository.buscarEnColeccionSegun(
@@ -59,7 +62,8 @@ public class ColeccionService {
                 filter.getUbicacionLatitudParsed(),
                 filter.getUbicacionLongitudParsed(),
                 delta,
-                curado
+                curado,
+                textoLibre
         );
     }
 }

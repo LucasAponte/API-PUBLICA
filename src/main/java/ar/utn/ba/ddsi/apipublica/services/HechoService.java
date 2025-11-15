@@ -138,7 +138,12 @@ public class HechoService implements IHechoService {
 
         String categoriaNombre = null;
         if(filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
-            categoriaNombre = filter.getCategoria();
+            categoriaNombre = filter.getCategoria().trim();
+        }
+
+        String textoLibre = null;
+        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
+            textoLibre = filter.getTextoLibre().trim();
         }
 
         // Determinar delta para proximidad en grados (por defecto 0.01 ~ 1km)
@@ -157,6 +162,7 @@ public class HechoService implements IHechoService {
                 filter.getUbicacionLatitudParsed(),
                 filter.getUbicacionLongitudParsed(),
                 delta
+                textoLibre
         );
         Hecho hecho = new Hecho("ehco de prueba","descripcion de prueba",new Categoria("categoria de prueba"),
                 new Ubicacion(10.0f,10.0f,new Provincia("as","eeee")),LocalDate.now(),new Fuente());
@@ -174,5 +180,5 @@ public class HechoService implements IHechoService {
             System.out.println("Hecho convertido a DTO: " + dto);
         }
         return hechosDTO;
-    }
+     }
 }

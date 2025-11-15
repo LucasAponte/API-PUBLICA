@@ -21,7 +21,12 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
             // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
-            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta))")
+            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta))")+
+            "AND (:texto IS NULL OR (" +
+                "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
+                "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
+                "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
+            "))")
     List<Hecho> buscarHechosSegun(
             @Param("categoriaNombre") String categoriaNombre,
             @Param("repDesde") LocalDate repDesde,
@@ -31,5 +36,6 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             @Param("lat") Float lat,
             @Param("lon") Float lon,
             @Param("delta") Float delta
+            @Param("texto") String texto
     );
 }

@@ -11,6 +11,7 @@ public class HechoFilterDTO {
     private String fechaAcontecimientoHasta;
     private String ubicacionLatitud;
     private String ubicacionLongitud;
+    private String textoLibre;
 
     // Campos parseados (resultado de la validación)
     private LocalDate fechaReporteDesdeParsed;
@@ -30,7 +31,8 @@ public class HechoFilterDTO {
             String fechaAcontecimientoDesde,
             String fechaAcontecimientoHasta,
             String ubicacionLatitud,
-            String ubicacionLongitud
+            String ubicacionLongitud,
+            String textoLibre
     ) {
         this.categoria = categoria;
         this.fechaReporteDesde = fechaReporteDesde;
@@ -39,6 +41,7 @@ public class HechoFilterDTO {
         this.fechaAcontecimientoHasta = fechaAcontecimientoHasta;
         this.ubicacionLatitud = ubicacionLatitud;
         this.ubicacionLongitud = ubicacionLongitud;
+        this.textoLibre = textoLibre;
     }
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
@@ -60,6 +63,9 @@ public class HechoFilterDTO {
 
     public String getUbicacionLongitud() { return ubicacionLongitud; }
     public void setUbicacionLongitud(String ubicacionLongitud) { this.ubicacionLongitud = ubicacionLongitud; }
+
+    public String getTextoLibre() { return textoLibre; }
+    public void setTextoLibre(String textoLibre) { this.textoLibre = textoLibre; }
 
     // --- Getters para campos parseados ---
     public LocalDate getFechaReporteDesdeParsed() { return fechaReporteDesdeParsed; }

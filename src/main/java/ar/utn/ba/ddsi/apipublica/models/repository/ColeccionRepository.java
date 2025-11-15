@@ -12,16 +12,22 @@ import java.time.LocalDate;
 import java.util.List;
 @Repository
 public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
-    // Consulta que une con HechoXColeccion para filtrar por coleccion y opcionalmente por consensuado
-    @Query("SELECT h FROM HechoXColeccion hxc JOIN hxc.hecho h " +
+    //Revisar Consulta
+    @Query("SELECT hxc.hecho FROM HechoXColeccion hxc " +
+            "JOIN hxc.hecho h " +
             "WHERE hxc.coleccion.id_coleccion = :coleccionId " +
+            "AND (:curado IS NULL OR hxc.consensuado = :curado) " +
             "AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
             "AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde) " +
             "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
             "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta)) " +
-            "AND (:curado IS NULL OR hxc.consensuado = :curado)")
+            "AND (:texto IS NULL OR (" +
+                "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
+                "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
+                "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
+            "))")
     List<Hecho> buscarEnColeccionSegun(
             @Param("coleccionId") Long coleccionId,
             @Param("categoriaNombre") String categoriaNombre,
@@ -32,6 +38,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("lat") Float lat,
             @Param("lon") Float lon,
             @Param("delta") Float delta,
-            @Param("curado") Boolean curado
+            @Param("curado") Boolean curado,
+            @Param("texto") String texto
     );
 }
