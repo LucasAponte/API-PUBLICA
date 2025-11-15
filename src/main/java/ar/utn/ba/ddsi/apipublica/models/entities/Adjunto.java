@@ -15,9 +15,14 @@ import lombok.Setter;
 public class Adjunto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long id_Adjunto;
     @Enumerated(EnumType.STRING)
     private TipoMedia tipo;
     @Column(length = 100)
     private String url;
+
+    public Adjunto(TipoMedia tipo, String url) {
+        this.tipo = tipo;
+        this.url = url;
+    }
 }

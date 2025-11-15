@@ -1,8 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
-import ar.utn.ba.ddsi.apipublica.models.entities.EnumModoNavegacion;
-import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
+import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +9,7 @@ import java.util.List;
 
 @Service
 public class ColeccionService {
+    //No tengo el Filtrador de Hechos, asi que delego todo al Repository ESTARÁ BIEN?????
     private final ColeccionRepository coleccionRepository;
 
     public ColeccionService(ColeccionRepository coleccionRepository) {
@@ -20,33 +20,36 @@ public class ColeccionService {
         if (coleccionId == null) {
             throw new IllegalArgumentException("El ID de la colección no puede ser nulo");
         }
-        coleccionRepository.findById(coleccionId)
-                .orElseThrow(() -> new IllegalArgumentException("La colección " + coleccionId + " no existe"));
-
-        if (filter == null) {
-            filter = new HechoFilterDTO();
+        if (coleccionRepository.findById(coleccionId).isEmpty()) {
+            throw new IllegalArgumentException("Colección no existe: " + coleccionId);
         }
+
+        if (filter == null) filter = new HechoFilterDTO();
+
+        // Validar y parsear el DTO (mueve la lógica de validación al propio DTO)
         filter.validateAndParse();
 
+        // Normalizar categoria
         String categoriaNombre = null;
         if (filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
             categoriaNombre = filter.getCategoria().trim();
         }
 
+        // Determinar delta si hay coordenadas
+        Float delta = null;
+        if (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null) {
+            delta = 0.01f; // tolerancia por defecto
+        }
+
+        Boolean curado = null; // null significa no filtrar por consensuado
+        if (modoDeNavegacion != null) {
+            if (modoDeNavegacion.equalsIgnoreCase("CURADO")) curado = Boolean.TRUE;
+            else if (modoDeNavegacion.equalsIgnoreCase("NOCURADO")) curado = Boolean.FALSE;
+            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);
         String textoLibre = null;
         if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
             textoLibre = filter.getTextoLibre().trim();
-        }
-
-        Boolean curado = null;
-        if (modoDeNavegacion != null && !modoDeNavegacion.isBlank()) {
-            EnumModoNavegacion modoEnum;
-            try {
-                modoEnum = EnumModoNavegacion.valueOf(modoDeNavegacion.toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                throw new IllegalArgumentException("Modo Navegacion incorrecto");
-            }
-            curado = (modoEnum == EnumModoNavegacion.CURADO);
+  
         }
 
         return coleccionRepository.buscarEnColeccionSegun(
@@ -58,6 +61,7 @@ public class ColeccionService {
                 filter.getFechaAcontecimientoHastaParsed(),
                 filter.getUbicacionLatitudParsed(),
                 filter.getUbicacionLongitudParsed(),
+                delta,
                 curado,
                 textoLibre
         );

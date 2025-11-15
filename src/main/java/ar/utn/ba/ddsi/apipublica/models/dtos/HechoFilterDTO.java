@@ -104,5 +104,37 @@ public class HechoFilterDTO {
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("Latitud o longitud inválida", nfe);
         }
+
+        // Validaciones lógicas: desde <= hasta si ambos existen
+        if (this.fechaReporteDesdeParsed != null && this.fechaReporteHastaParsed != null) {
+            if (this.fechaReporteDesdeParsed.isAfter(this.fechaReporteHastaParsed)) {
+                throw new IllegalArgumentException("fecha_reporte_desde no puede ser posterior a fecha_reporte_hasta");
+            }
+        }
+        if (this.fechaAcontecimientoDesdeParsed != null && this.fechaAcontecimientoHastaParsed != null) {
+            if (this.fechaAcontecimientoDesdeParsed.isAfter(this.fechaAcontecimientoHastaParsed)) {
+                throw new IllegalArgumentException("fecha_acontecimiento_desde no puede ser posterior a fecha_acontecimiento_hasta");
+            }
+        }
+
+        // Si una de las coordenadas está presente pero la otra no -> error
+        if ((this.ubicacionLatitudParsed != null && this.ubicacionLongitudParsed == null) ||
+                (this.ubicacionLatitudParsed == null && this.ubicacionLongitudParsed != null)) {
+            throw new IllegalArgumentException("Debe suministrar ambas coordenadas: ubicacion_latitud y ubicacion_longitud");
+        }
+    }
+
+    /**
+     * Indica si no se pasó ningún criterio de filtrado.
+     */
+    public boolean isEmpty() {
+        return ( (this.categoria == null || this.categoria.isBlank())
+                && this.fechaReporteDesdeParsed == null
+                && this.fechaReporteHastaParsed == null
+                && this.fechaAcontecimientoDesdeParsed == null
+                && this.fechaAcontecimientoHastaParsed == null
+                && this.ubicacionLatitudParsed == null
+                && this.ubicacionLongitudParsed == null
+        );
     }
 }

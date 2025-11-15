@@ -22,7 +22,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
-            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= 0.01 AND ABS(h.ubicacion.longitud - :lon) <= 0.01)) " +
+            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta)) " +
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
@@ -37,6 +37,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("acaHasta") LocalDate acaHasta,
             @Param("lat") Float lat,
             @Param("lon") Float lon,
+            @Param("delta") Float delta,
             @Param("curado") Boolean curado,
             @Param("texto") String texto
     );
