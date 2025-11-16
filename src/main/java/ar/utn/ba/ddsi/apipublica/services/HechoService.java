@@ -2,7 +2,7 @@ package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoCreateDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
-import ar.utn.ba.ddsi.apipublica.models.dtos.HechoRtaDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.*;
 import org.springframework.stereotype.Service;
@@ -125,12 +125,12 @@ public class HechoService implements IHechoService {
     }
 
     @Override
-    public List<HechoRtaDTO> buscarConFiltro(HechoFilterDTO filter) {
+    public List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter) {
         System.out.println("Buscando hechos con filtro");
 
         if (filter == null) {
             List<Hecho> all = hechoRepository.findAll();
-            return PasarAHechoDTO(all);
+            return PasarAHechosDTO(all);
         }
 
         // Validar y parsear usando el DTO
@@ -161,24 +161,24 @@ public class HechoService implements IHechoService {
                 filter.getFechaAcontecimientoHastaParsed(),
                 filter.getUbicacionLatitudParsed(),
                 filter.getUbicacionLongitudParsed(),
-                delta
+                delta,
                 textoLibre
         );
-        Hecho hecho = new Hecho("ehco de prueba","descripcion de prueba",new Categoria("categoria de prueba"),
-                new Ubicacion(10.0f,10.0f,new Provincia("as","eeee")),LocalDate.now(),new Fuente());
-        resultados.add(hecho);
         System.out.println("Resultados encontrados: " + (resultados == null ? 0 : resultados.size()));
-        return PasarAHechoDTO(resultados);
+        List<HechoOutputDTO> resultadosDTO= PasarAHechosDTO(resultados);
+        System.out.println("Resultados pasados: " + resultadosDTO.size());
+        return resultadosDTO;
     }
-    public List<HechoRtaDTO> PasarAHechoDTO(List<Hecho> hechos) {
-        List<HechoRtaDTO> hechosDTO = new ArrayList<>();
-        if(hechos==null) return hechosDTO;
-        for(Hecho h : hechos) {
-            HechoRtaDTO dto = new HechoRtaDTO();
-            dto.HechoAHechoRtaDTO(h);
-            hechosDTO.add(dto);
+    public List<HechoOutputDTO> PasarAHechosDTO(List<Hecho> hechos) {
+        System.out.println("Convirtiendo "+ hechos.size() +"hechos a DTO");
+        List<HechoOutputDTO> resultadoDTO = new ArrayList<>();
+        if(hechos==null) return resultadoDTO;
+        hechos.forEach(h -> {
+            HechoOutputDTO dto = new HechoOutputDTO(h);
+            System.out.println("Instancia " + dto);
+            resultadoDTO.add(dto);
             System.out.println("Hecho convertido a DTO: " + dto);
-        }
-        return hechosDTO;
+        });
+        return resultadoDTO;
      }
 }

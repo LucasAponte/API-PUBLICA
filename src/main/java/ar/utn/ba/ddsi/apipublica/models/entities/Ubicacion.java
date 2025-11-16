@@ -12,6 +12,9 @@ public class Ubicacion {
     @ManyToOne
     private Provincia provincia;
 
+    public Ubicacion() {
+    }
+
     public Ubicacion(float latitud, float longitud,Provincia provincia) {
         if(this.id ==0){
             this.id =1;

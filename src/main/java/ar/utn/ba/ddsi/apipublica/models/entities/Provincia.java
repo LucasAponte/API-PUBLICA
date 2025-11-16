@@ -12,6 +12,8 @@ public class Provincia {
     private long idProvincia;
     private String nombre;
     private String pais;
+    public Provincia() {
+    }
 
     public Provincia(String nombre, String pais) {}
     public String getNombre() {

@@ -40,7 +40,7 @@ public class Hecho {
     @OneToMany
     private List<Adjunto> adjuntos = new ArrayList<>();
 
-    public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion ubicacion, LocalDate fecha, Fuente fuente) {
+    public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion ubicacion, LocalDate fecha, Fuente fuente, EnumTipoHecho tipoHecho,Etiqueta etiqueta,List<Adjunto> adjuntos) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -49,6 +49,10 @@ public class Hecho {
         this.fechaDeCarga = LocalDate.now();
         this.etiqueta = null;
         this.fuente = fuente;
+        this.tipoHecho = tipoHecho;
+        this.etiqueta = etiqueta;
+        this.adjuntos = adjuntos;
+
     }
 
 }

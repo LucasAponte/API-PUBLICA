@@ -12,6 +12,9 @@ public class Etiqueta {
     private long idEtiqueta;
     private String nombre;
 
+    public Etiqueta() {
+    }
+    public Etiqueta(long idEtiqueta, String nombre) {}
     public Etiqueta(String etiqueta) {
         this.nombre = etiqueta;
     }

@@ -45,25 +45,25 @@ public class ColeccionService {
         if (modoDeNavegacion != null) {
             if (modoDeNavegacion.equalsIgnoreCase("CURADO")) curado = Boolean.TRUE;
             else if (modoDeNavegacion.equalsIgnoreCase("NOCURADO")) curado = Boolean.FALSE;
-            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);
-        String textoLibre = null;
-        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
-            textoLibre = filter.getTextoLibre().trim();
-  
-        }
+            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);}
+            String textoLibre = null;
+            if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
+                textoLibre = filter.getTextoLibre().trim();
 
-        return coleccionRepository.buscarEnColeccionSegun(
-                coleccionId,
-                categoriaNombre,
-                filter.getFechaReporteDesdeParsed(),
-                filter.getFechaReporteHastaParsed(),
-                filter.getFechaAcontecimientoDesdeParsed(),
-                filter.getFechaAcontecimientoHastaParsed(),
-                filter.getUbicacionLatitudParsed(),
-                filter.getUbicacionLongitudParsed(),
-                delta,
-                curado,
-                textoLibre
-        );
+            }
+
+            return coleccionRepository.buscarEnColeccionSegun(
+                    coleccionId,
+                    categoriaNombre,
+                    filter.getFechaReporteDesdeParsed(),
+                    filter.getFechaReporteHastaParsed(),
+                    filter.getFechaAcontecimientoDesdeParsed(),
+                    filter.getFechaAcontecimientoHastaParsed(),
+                    filter.getUbicacionLatitudParsed(),
+                    filter.getUbicacionLongitudParsed(),
+                    delta,
+                    curado,
+                    textoLibre
+            );
+        }
     }
-}
