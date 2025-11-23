@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class Etiqueta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idEtiqueta;
+    private long id_etiqueta;
     private String nombre;
 
     public Etiqueta() {
@@ -21,5 +21,5 @@ public class Etiqueta {
 
     public String getNombre() {return nombre;}
     public void setNombre(String nombre) {this.nombre = nombre;}
-    public long getIdEtiqueta() {return idEtiqueta;}
+    public long getId_etiqueta() {return id_etiqueta;}
 }

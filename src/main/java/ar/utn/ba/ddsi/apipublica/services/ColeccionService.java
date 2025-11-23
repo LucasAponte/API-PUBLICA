@@ -1,8 +1,10 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
+import ar.utn.ba.ddsi.apipublica.models.repository.FuenteRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.List;
 public class ColeccionService {
     //No tengo el Filtrador de Hechos, asi que delego todo al Repository ESTARÁ BIEN?????
     private final ColeccionRepository coleccionRepository;
+    private final FuenteRepository fuenteRepository;
 
-    public ColeccionService(ColeccionRepository coleccionRepository) {
+    public ColeccionService(ColeccionRepository coleccionRepository, FuenteRepository fuenteRepository) {
         this.coleccionRepository = coleccionRepository;
+        this.fuenteRepository = fuenteRepository;
     }
 
     public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
@@ -66,4 +70,36 @@ public class ColeccionService {
                     textoLibre
             );
         }
+
+    public List<Coleccion> buscarColeccionesSegun(ColeccionFilterDTO filter) {
+        if (filter == null) filter = new ColeccionFilterDTO();
+
+        List<Long> fuenteIds = filter.parseFuenteIdsOrNull();
+
+        String tipo = filter.getTipoAlgoritmo();
+        if (tipo != null && tipo.isBlank()) tipo = null;
+        String titulo = filter.getTitulo(); if (titulo != null && titulo.isBlank()) titulo = null;
+        String descripcion = filter.getDescripcion(); if (descripcion != null && descripcion.isBlank()) descripcion = null;
+
+        // Si se pasó fuente, validar su existencia
+        if (fuenteIds != null) {
+            for (Long fid : fuenteIds) {
+                if (fuenteRepository.findById(fid).isEmpty()) {
+                    throw new IllegalArgumentException("Fuente no existe: " + fid);
+                }
+            }
+        }
+
+        // Parsear tipo a Enum
+        EnumTipoDeAlgoritmo tipoEnum = null;
+        if (tipo != null) {
+            try {
+                tipoEnum = EnumTipoDeAlgoritmo.valueOf(tipo.toUpperCase());
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalArgumentException("tipo_algoritmo inválido: " + tipo);
+            }
+        }
+
+        return coleccionRepository.buscarColeccionesSegun(titulo, descripcion, tipoEnum, fuenteIds);
     }
+}

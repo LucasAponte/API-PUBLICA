@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Adjunto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_Adjunto;
+    private long id_adjunto;
     @Enumerated(EnumType.STRING)
     private TipoMedia tipo;
     @Column(length = 100)

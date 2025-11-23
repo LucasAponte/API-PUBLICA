@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class Fuente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idFuente;
+    private long id_fuente;
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)
@@ -16,18 +16,18 @@ public class Fuente {
     private EnumTipoFuente tipoFuente;
 
     public Fuente(long id, String nombre, String url, EnumTipoFuente tipoFuente) {
-        this.idFuente = id;
+        this.id_fuente = id;
         this.nombre = nombre;
         this.url = url;
         this.tipoFuente = tipoFuente;
     }
     public Fuente() {
     }
-    public long getIdFuente() {
-        return idFuente;
+    public long getId_fuente() {
+        return id_fuente;
     }
-    public void setIdFuente(long idFuente) {
-        this.idFuente = idFuente;
+    public void setId_fuente(long id_fuente) {
+        this.id_fuente = id_fuente;
     }
     public String getNombre() {
         return nombre;

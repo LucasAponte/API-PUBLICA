@@ -19,7 +19,6 @@ import lombok.Setter;
 public class CondicionFuente extends InterfaceCondicion {
 
     @ManyToOne
-    @JoinColumn(name = "fuente_id_fuente")
     private Fuente fuente;
 
     @Override

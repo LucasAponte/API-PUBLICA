@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class Provincia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idProvincia;
+    private long id_provincia;
     private String nombre;
     private String pais;
     public Provincia() {

@@ -27,6 +27,8 @@ public class SolicitudEliminacion {
 //VER SI ESTO VA ACA O EN OTRA PARTE
     @ManyToOne
     private Contribuyente solicitante;
+    @Column
+    private boolean spam;
 
     public SolicitudEliminacion(Contribuyente solicitante,Hecho hecho, LocalDate fecha, String motivo) {
         this.solicitante = solicitante;

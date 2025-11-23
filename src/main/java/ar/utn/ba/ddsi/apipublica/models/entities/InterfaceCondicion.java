@@ -12,7 +12,7 @@ import lombok.Data;
 public abstract class InterfaceCondicion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_condicion;
 
     public boolean cumpleCondicion(Hecho hecho) {
         return false;

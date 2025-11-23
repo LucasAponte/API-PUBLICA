@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.apipublica.models.repository;
 
 import ar.utn.ba.ddsi.apipublica.models.entities.Coleccion;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
+import ar.utn.ba.ddsi.apipublica.models.entities.EnumTipoDeAlgoritmo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,5 +41,18 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("delta") Float delta,
             @Param("curado") Boolean curado,
             @Param("texto") String texto
+    );
+
+    // Nuevo: búsqueda de colecciones con filtros opcionales
+    @Query("SELECT DISTINCT c FROM Coleccion c LEFT JOIN c.fuentes f " +
+            "WHERE (:titulo IS NULL OR LOWER(c.titulo) LIKE LOWER(CONCAT('%', :titulo, '%'))) " +
+            "AND (:descripcion IS NULL OR LOWER(c.descripcion) LIKE LOWER(CONCAT('%', :descripcion, '%'))) " +
+            "AND (:tipo IS NULL OR c.tipoDeAlgoritmo = :tipo) " +
+            "AND (:fuenteIds IS NULL OR f.idFuente IN :fuenteIds)")
+    List<Coleccion> buscarColeccionesSegun(
+            @Param("titulo") String titulo,
+            @Param("descripcion") String descripcion,
+            @Param("tipo") EnumTipoDeAlgoritmo tipo,
+            @Param("fuenteIds") List<Long> fuenteIds
     );
 }

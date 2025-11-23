@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.apipublica.controllers;
 
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.services.ColeccionService;
 import org.springframework.http.HttpStatus;
@@ -17,10 +18,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/colecciones")
 public class ColecionController {
-   // ● Consulta de hechos dentro de una colección.
+    // ● Consulta de hechos dentro de una colección.
     private final ColeccionService coleccionService;
+
     public ColecionController(ColeccionService coleccionService) {
         this.coleccionService = coleccionService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> listarColecciones(
+            @RequestParam(value = "titulo", required = false) String titulo,
+            @RequestParam(value = "descripcion", required = false) String descripcion,
+            @RequestParam(value = "tipo_algoritmo", required = false) String tipoAlgoritmo,
+            // permitir repetición: ?fuente_id=1&fuente_id=2 o ?fuente_id=1,2
+            @RequestParam(value = "fuente_id", required = false) List<String> fuenteId
+    ) {
+        ColeccionFilterDTO filter = new ColeccionFilterDTO(titulo, descripcion, tipoAlgoritmo, fuenteId);
+
+        try {
+            List<Coleccion> colecciones = coleccionService.buscarColeccionesSegun(filter);
+            return ResponseEntity.status(HttpStatus.OK).body(colecciones);
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Error buscando colecciones: " + ex.getMessage());
+        }
     }
 
     @GetMapping("/{coleccionID}/hechos")

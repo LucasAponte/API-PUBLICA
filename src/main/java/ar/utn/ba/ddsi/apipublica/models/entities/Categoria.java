@@ -4,12 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idCategoria;
+    private long id_categoria;
 
     private String nombre;
 
@@ -18,10 +22,6 @@ public class Categoria {
     public Categoria(String nombre) {
         this.nombre = nombre;
     }
-    public String getNombre(){return this.nombre;}
-    public void setNombre(String dato) {this.nombre = dato;}
-    public  long getIdCategoria(){return this.idCategoria;}
-
 
 
 }

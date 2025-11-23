@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class Ubicacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id= 0;
+    private long id_ubicacion;
     private float latitud;
     private float longitud;
     @ManyToOne
@@ -16,8 +16,8 @@ public class Ubicacion {
     }
 
     public Ubicacion(float latitud, float longitud,Provincia provincia) {
-        if(this.id ==0){
-            this.id =1;
+        if(this.id_ubicacion ==0){
+            this.id_ubicacion =1;
         }
         this.latitud = latitud;
         this.longitud = longitud;
@@ -34,5 +34,5 @@ public class Ubicacion {
     public float getLongitud() {
         return longitud;
     }
-    public long getIdUbicacion() {return this.id;}
+    public long getIdUbicacion() {return this.id_ubicacion;}
 }

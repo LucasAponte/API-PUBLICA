@@ -34,6 +34,7 @@ public class SolicitudService implements ISolicitudService{
         if (hecho == null) throw new IllegalArgumentException("Hecho no encontrado");
 
         Contribuyente solicitante = contribuyenteRepository.findById(dto.getIdContribuyente()).orElse(null);
+        solicitante = new Contribuyente("Nombre Falso", ")apellido falso", 22); // Temporal hasta integrar con servicio de contribuyentes
         if (solicitante == null) throw new IllegalArgumentException("Contribuyente no encontrado");
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(solicitante, hecho, LocalDate.now(), dto.getMotivo());
