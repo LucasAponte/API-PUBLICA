@@ -48,7 +48,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             "WHERE (:titulo IS NULL OR LOWER(c.titulo) LIKE LOWER(CONCAT('%', :titulo, '%'))) " +
             "AND (:descripcion IS NULL OR LOWER(c.descripcion) LIKE LOWER(CONCAT('%', :descripcion, '%'))) " +
             "AND (:tipo IS NULL OR c.tipoDeAlgoritmo = :tipo) " +
-            "AND (:fuenteIds IS NULL OR f.idFuente IN :fuenteIds)")
+            "AND (:fuenteIds IS NULL OR f.id_fuente IN :fuenteIds)")
     List<Coleccion> buscarColeccionesSegun(
             @Param("titulo") String titulo,
             @Param("descripcion") String descripcion,

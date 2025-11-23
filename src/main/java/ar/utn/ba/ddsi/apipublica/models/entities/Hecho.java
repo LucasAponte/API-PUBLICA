@@ -39,6 +39,8 @@ public class Hecho {
     private EnumTipoHecho tipoHecho;
     @OneToMany
     private List<Adjunto> adjuntos = new ArrayList<>();
+    @Column(name="estadoHecho")
+    private EnumEstadoHecho estado;
 
     public Hecho(String titulo, String descripcion, Categoria categoria,Ubicacion ubicacion, LocalDate fecha, Fuente fuente, EnumTipoHecho tipoHecho,Etiqueta etiqueta,List<Adjunto> adjuntos) {
         this.titulo = titulo;

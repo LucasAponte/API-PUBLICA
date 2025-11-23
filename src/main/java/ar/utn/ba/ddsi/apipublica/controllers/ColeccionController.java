@@ -17,11 +17,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/colecciones")
-public class ColecionController {
+public class ColeccionController {
     // ● Consulta de hechos dentro de una colección.
     private final ColeccionService coleccionService;
 
-    public ColecionController(ColeccionService coleccionService) {
+    public ColeccionController(ColeccionService coleccionService) {
         this.coleccionService = coleccionService;
     }
 
