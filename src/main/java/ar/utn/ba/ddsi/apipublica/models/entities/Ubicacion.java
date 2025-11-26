@@ -10,6 +10,7 @@ public class Ubicacion {
     private float latitud;
     private float longitud;
     @ManyToOne
+    @JoinColumn(name = "id_provincia")
     private Provincia provincia;
 
     public Ubicacion() {
