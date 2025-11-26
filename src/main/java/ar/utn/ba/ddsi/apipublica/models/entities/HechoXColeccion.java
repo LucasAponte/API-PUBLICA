@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.apipublica.models.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +24,8 @@ public class HechoXColeccion {
     private Coleccion coleccion;
 
     @Column(name = "consensuado", nullable = false)
-    private Boolean consensuado;
+    @ColumnDefault("0")
+    private Boolean consensuado=false;
 
     public HechoXColeccion(Hecho hecho, Coleccion coleccion, Boolean consensuado) {
         this.hecho = hecho;
