@@ -8,6 +8,7 @@ import ar.utn.ba.ddsi.apipublica.models.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,7 @@ public class HechoService implements IHechoService {
         }
 
         // Tipo de hecho: intentar parsear el enum
+        if(dto.getTipoHecho()==null){hecho.setTipoHecho(EnumTipoHecho.TEXTO);}
         if (dto.getTipoHecho() != null && !dto.getTipoHecho().isBlank()) {
             try {
                 EnumTipoHecho tipo = EnumTipoHecho.valueOf(dto.getTipoHecho());
@@ -117,7 +119,7 @@ public class HechoService implements IHechoService {
         hecho.setAdjuntos(listaAdjuntos);
 
         // Fecha de carga
-        hecho.setFechaDeCarga(LocalDate.now());
+        hecho.setFechaDeCarga(LocalDateTime.now());
 
         // Guardar en la base de datos
         //Deberìa mandarselo al Agregador de Hechos

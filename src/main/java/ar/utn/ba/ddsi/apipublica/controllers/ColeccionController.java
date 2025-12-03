@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.controllers;
 
 
+import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
@@ -36,7 +37,7 @@ public class ColeccionController {
         ColeccionFilterDTO filter = new ColeccionFilterDTO(titulo, descripcion, tipoAlgoritmo, fuenteId);
 
         try {
-            List<Coleccion> colecciones = coleccionService.buscarColeccionesSegun(filter);
+            List<ColeccionOutputDTO> colecciones = coleccionService.buscarColeccionesSegun(filter);
             return ResponseEntity.status(HttpStatus.OK).body(colecciones);
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());

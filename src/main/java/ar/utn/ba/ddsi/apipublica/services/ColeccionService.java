@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
+import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
@@ -7,6 +8,7 @@ import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
 import ar.utn.ba.ddsi.apipublica.models.repository.FuenteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -71,7 +73,7 @@ public class ColeccionService {
             );
         }
 
-    public List<Coleccion> buscarColeccionesSegun(ColeccionFilterDTO filter) {
+    public List<ColeccionOutputDTO> buscarColeccionesSegun(ColeccionFilterDTO filter) {
         if (filter == null) filter = new ColeccionFilterDTO();
 
         List<Long> fuenteIds = filter.parseFuenteIdsOrNull();
@@ -100,6 +102,13 @@ public class ColeccionService {
             }
         }
 
-        return coleccionRepository.buscarColeccionesSegun(titulo, descripcion, tipoEnum, fuenteIds);
+        return listaAColeccionOutputDTO(coleccionRepository.buscarColeccionesSegun(titulo, descripcion, tipoEnum, fuenteIds));
+    }
+    public List<ColeccionOutputDTO> listaAColeccionOutputDTO(List<Coleccion> colecciones){
+        List<ColeccionOutputDTO> coleccionesDTO = new ArrayList<>();
+        colecciones.forEach(coleccion -> {
+            coleccionesDTO.add(new ColeccionOutputDTO(coleccion));
+        });
+        return coleccionesDTO;
     }
 }

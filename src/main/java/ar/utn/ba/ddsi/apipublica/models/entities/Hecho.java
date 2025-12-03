@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class Hecho {
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
     @Column(name = "fechaCarga", nullable = false)
-    private LocalDate fechaDeCarga;
+    private LocalDateTime fechaDeCarga;
     @ManyToOne(cascade = CascadeType.ALL)
     private Fuente fuente;
     @ManyToOne
@@ -48,7 +49,7 @@ public class Hecho {
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fecha = fecha;
-        this.fechaDeCarga = LocalDate.now();
+        this.fechaDeCarga = LocalDateTime.now();
         this.etiqueta = null;
         this.fuente = fuente;
         this.tipoHecho = tipoHecho;

@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.models.dtos;
 
 import ar.utn.ba.ddsi.apipublica.models.entities.Adjunto;
+import ar.utn.ba.ddsi.apipublica.models.entities.EnumTipoHecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.Fuente;
 import lombok.Getter;
@@ -36,8 +37,10 @@ public class HechoOutputDTO {
         this.ubicacionLat = String.valueOf(hecho.getUbicacion().getLatitud());
         this.ubicacionLon = String.valueOf(hecho.getUbicacion().getLongitud());
         this.fuente = hecho.getFuente().getNombre();
-        System.out.println("Tipo de hecho: " + hecho.getTipoHecho().name());
-        this.tipoHecho = hecho.getTipoHecho().name();
+        if(hecho.getTipoHecho()!=null) {
+            System.out.println("Tipo de hecho: " + hecho.getTipoHecho().name());
+            this.tipoHecho = hecho.getTipoHecho().name();
+        }else this.tipoHecho = EnumTipoHecho.TEXTO.name();
         if(hecho.getAdjuntos().size()>=1)hecho.getAdjuntos().forEach(adjunto -> this.adjuntos.add(new AdjuntoDTO(adjunto)));
     }
     @Override
