@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.apipublica.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Ubicacion {
     @Id
