@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SolicitudService implements ISolicitudService{
@@ -43,5 +44,13 @@ public class SolicitudService implements ISolicitudService{
     @Override
     public List<SolicitudEliminacion> listarSolicitudes() {
         return solicitudRepository.findAll();
+    }
+
+    @Override
+    public SolicitudEliminacion obtenerSolicitudPorId(Long id) {
+        SolicitudEliminacion solicitud = this.solicitudRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        return solicitud;
+
     }
 }

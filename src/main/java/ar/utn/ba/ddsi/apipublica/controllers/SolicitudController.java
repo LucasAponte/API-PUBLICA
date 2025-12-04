@@ -38,5 +38,10 @@ public class SolicitudController {
     public ResponseEntity<List<SolicitudEliminacion>> listar() {
         return ResponseEntity.ok(solicitudService.listarSolicitudes());
     }
+
+    @GetMapping ("/{id}")
+    public ResponseEntity<SolicitudEliminacion> obtenerEstadistica(@PathVariable Long id ){
+        return ResponseEntity.ok(this.solicitudService.obtenerSolicitudPorId(id));
+    }
 }
 

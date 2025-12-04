@@ -8,4 +8,5 @@ import java.util.List;
 public interface ISolicitudService {
     SolicitudEliminacion crearSolicitud(SolicitudCreateDTO dto) throws IllegalArgumentException;
     List<SolicitudEliminacion> listarSolicitudes();
+    SolicitudEliminacion obtenerSolicitudPorId(Long id);
 }
