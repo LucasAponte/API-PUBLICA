@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/hechos")
+@CrossOrigin(origins = "http://localhost:3000") // <--- ¡AGREGA ESTA LÍNEA!
 public class HechoController {
 
     private final IHechoService hechoService;

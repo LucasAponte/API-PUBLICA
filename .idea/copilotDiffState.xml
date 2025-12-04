@@ -3,15 +3,6 @@
   <component name="CopilotDiffPersistence">
     <option name="pendingDiffs">
       <map>
-        <entry key="$PROJECT_DIR$/src/main/java/ar/utn/ba/ddsi/apipublica/models/repository/ContribuyenteRepository.java">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/src/main/java/ar/utn/ba/ddsi/apipublica/models/repository/ContribuyenteRepository.java" />
-              <option name="originalContent" value="package ar.utn.ba.ddsi.apipublica.models.repository;&#10;&#10;import ar.utn.ba.ddsi.apipublica.models.entities.Contribuyente;&#10;import org.springframework.data.jpa.repository.JpaRepository;&#10;import org.springframework.stereotype.Repository;&#10;&#10;@Repository&#10;public interface ContribuyenteRepository extends JpaRepository&lt;Contribuyente, Long&gt; {&#10;    // JpaRepository ya provee findById, findAll, save, delete, etc.&#10;}&#10;" />
-              <option name="updatedContent" value="package ar.utn.ba.ddsi.apipublica.models.repository;&#10;&#10;import ar.utn.ba.ddsi.apipublica.models.entities.Contribuyente;&#10;import org.springframework.data.jpa.repository.JpaRepository;&#10;import org.springframework.stereotype.Repository;&#10;&#10;@Repository&#10;public interface ContribuyenteRepository extends JpaRepository&lt;Contribuyente, Long&gt; {&#10;    // JpaRepository ya provee findById, findAll, save, delete, etc.&#10;}" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/src/main/java/ar/utn/ba/ddsi/apipublica/models/repository/FuenteRepository.java">
           <value>
             <PendingDiffInfo>
