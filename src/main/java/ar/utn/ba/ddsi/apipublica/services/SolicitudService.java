@@ -2,7 +2,6 @@ package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudCreateDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudOutputDTO;
-import ar.utn.ba.ddsi.apipublica.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.SolicitudEliminacion;
 import ar.utn.ba.ddsi.apipublica.models.repository.ContribuyenteRepository;
@@ -20,12 +19,10 @@ public class SolicitudService implements ISolicitudService{
 
     private final SolicitudRepository solicitudRepository;
     private final HechoRepository hechoRepository;
-    private final ContribuyenteRepository contribuyenteRepository;
 
-    public SolicitudService(SolicitudRepository solicitudRepository, HechoRepository hechoRepository, ContribuyenteRepository contribuyenteRepository) {
+    public SolicitudService(SolicitudRepository solicitudRepository, HechoRepository hechoRepository) {
         this.solicitudRepository = solicitudRepository;
         this.hechoRepository = hechoRepository;
-        this.contribuyenteRepository = contribuyenteRepository;
     }
 
     @Override
@@ -35,11 +32,12 @@ public class SolicitudService implements ISolicitudService{
 
         Hecho hecho = hechoRepository.findById(dto.getIdHecho()).orElse(null);
         if (hecho == null) throw new IllegalArgumentException("Hecho no encontrado");
+        //DEbería chequear que existe el id? Por ahora pensamos que si manda solicitud es porque etsá bien.
 
-        Contribuyente solicitante = contribuyenteRepository.findById(dto.getIdContribuyente()).orElse(null);
-        if (solicitante == null) throw new IllegalArgumentException("Contribuyente no encontrado");
+        //Contribuyente solicitante = contribuyenteRepository.findById(dto.getIdContribuyente()).orElse(null);
+        //if (solicitante == null) throw new IllegalArgumentException("Contribuyente no encontrado");
 
-        SolicitudEliminacion solicitud = new SolicitudEliminacion(solicitante, hecho, LocalDate.now(), dto.getMotivo());
+        SolicitudEliminacion solicitud = new SolicitudEliminacion(dto.getIdContribuyente(), hecho, LocalDate.now(), dto.getMotivo());
         return solicitudRepository.save(solicitud);
     }
 

@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.apipublica.models.entities;
+/*package ar.utn.ba.ddsi.apipublica.models.entities;
 
 import jakarta.persistence.*;
 
@@ -46,3 +46,5 @@ public class Contribuyente {
     public void setAnonimo(Boolean anonimo) {this.anonimo = anonimo;}
 
 }
+
+ */
