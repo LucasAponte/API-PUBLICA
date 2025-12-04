@@ -26,8 +26,9 @@ public class SolicitudController {
             + " - " + dto.getMotivo());
             //ACÄ funca pero debería poder controlar si esiste o no el idcontribuyente por ahora safa
             SolicitudEliminacion solicitud = solicitudService.crearSolicitud(dto);
-            System.out.println(solicitud);
-            return ResponseEntity.ok(solicitud);
+            SolicitudOutputDTO solicitudOutputDTO = new SolicitudOutputDTO(solicitud);
+            System.out.println(solicitudOutputDTO);
+            return ResponseEntity.ok(solicitudOutputDTO);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
