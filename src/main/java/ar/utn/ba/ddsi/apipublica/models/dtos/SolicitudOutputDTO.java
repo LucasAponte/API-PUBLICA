@@ -3,6 +3,8 @@ package ar.utn.ba.ddsi.apipublica.models.dtos;
 import ar.utn.ba.ddsi.apipublica.models.entities.SolicitudEliminacion;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class SolicitudOutputDTO {
     private Long id_solicitud;
@@ -10,6 +12,7 @@ public class SolicitudOutputDTO {
     private String motivo;
     private String estadoSolicitud;
     private Long id_contribuyente;
+    private LocalDate fechaSolicitud;
     private boolean spam;
 
     public SolicitudOutputDTO(Long id_solicitud, HechoOutputDTO hecho, String estadoSolicitud, String motivo, Long id_contribuyente, boolean spam) {
@@ -31,5 +34,6 @@ public class SolicitudOutputDTO {
         // Asumiendo que 'solicitante' de SolicitudEliminacion no es nulo y tiene un método getId()
         this.id_contribuyente = solicitud.getId_solicitante() != null ? solicitud.getId_solicitante() : null;
         this.spam = solicitud.isSpam();
+        this.fechaSolicitud = solicitud.getFecha();
     }
 }

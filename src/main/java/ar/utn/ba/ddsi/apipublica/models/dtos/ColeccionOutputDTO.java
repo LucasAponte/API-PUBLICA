@@ -79,8 +79,7 @@ public class ColeccionOutputDTO {
                     safe.setFecha(hecho.getFecha() != null ? hecho.getFecha().toString() : null);
                     safe.setFechaDeCarga(hecho.getFechaDeCarga() != null ? hecho.getFechaDeCarga().toString() : null);
                     if (hecho.getUbicacion() != null) {
-                        safe.setUbicacionLat(String.valueOf(hecho.getUbicacion().getLatitud()));
-                        safe.setUbicacionLon(String.valueOf(hecho.getUbicacion().getLongitud()));
+                        safe.setUbicacion(new UbicacionOutputDTO(hecho.getUbicacion()));
                     }
                     safe.setEtiqueta(hecho.getEtiqueta() != null ? hecho.getEtiqueta().getNombre() : null);
                     safe.setTipoHecho(hecho.getTipoHecho() != null ? hecho.getTipoHecho().name() : null);

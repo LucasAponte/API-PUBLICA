@@ -37,6 +37,7 @@ public class SolicitudController {
     }
 
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
     public ResponseEntity<List<SolicitudOutputDTO>> listar() {
         return ResponseEntity.ok(solicitudService.listarSolicitudes());
     }

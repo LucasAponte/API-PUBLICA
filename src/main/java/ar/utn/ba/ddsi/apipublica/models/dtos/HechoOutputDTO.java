@@ -13,13 +13,13 @@ import java.util.List;
 @Getter
 @Setter
 public class HechoOutputDTO {
+    private Long id_hecho;
     private String titulo;
     private String descripcion;
     private String categoria;
     private String fecha;
     private String fechaDeCarga;
-    private String ubicacionLat; // latitud como string
-    private String ubicacionLon; // longitud como string
+    private UbicacionOutputDTO ubicacion;
     private String etiqueta;
     private String tipoHecho;
     private String fuente; // nueva propiedad: fuente del hecho
@@ -28,14 +28,14 @@ public class HechoOutputDTO {
     }
 
     public HechoOutputDTO(Hecho hecho) {
+        this.id_hecho= hecho.getId_hecho();
         this.titulo = hecho.getTitulo();
         this.descripcion = hecho.getDescripcion();
         this.categoria = hecho.getCategoria().getNombre();
         this.fecha = hecho.getFecha().toString();
         this.fechaDeCarga = hecho.getFechaDeCarga().toString();
         this.etiqueta = hecho.getEtiqueta() != null ? hecho.getEtiqueta().getNombre(): null;
-        this.ubicacionLat = String.valueOf(hecho.getUbicacion().getLatitud());
-        this.ubicacionLon = String.valueOf(hecho.getUbicacion().getLongitud());
+        this.ubicacion = new UbicacionOutputDTO(hecho.getUbicacion());
         this.fuente = hecho.getFuente().getNombre();
         if(hecho.getTipoHecho()!=null) {
             System.out.println("Tipo de hecho: " + hecho.getTipoHecho().name());
@@ -51,8 +51,6 @@ public class HechoOutputDTO {
                 ", categoria='" + categoria + '\'' +
                 ", fecha=" + fecha +
                 ", fechaDeCarga=" + fechaDeCarga +
-                ", ubicacionLat='" + ubicacionLat + '\'' +
-                ", ubicacionLon='" + ubicacionLon + '\'' +
                 ", etiqueta='" + etiqueta + '\'' +
                 ", tipoHecho='" + tipoHecho + '\'' +
                 ", fuente='" + (fuente!=null ? fuente : null) + '\'' +
