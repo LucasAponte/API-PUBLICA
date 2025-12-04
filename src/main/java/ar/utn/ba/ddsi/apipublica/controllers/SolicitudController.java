@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.controllers;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudCreateDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.SolicitudEliminacion;
 import ar.utn.ba.ddsi.apipublica.services.ISolicitudService;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +36,12 @@ public class SolicitudController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SolicitudEliminacion>> listar() {
+    public ResponseEntity<List<SolicitudOutputDTO>> listar() {
         return ResponseEntity.ok(solicitudService.listarSolicitudes());
     }
 
     @GetMapping ("/{id}")
-    public ResponseEntity<SolicitudEliminacion> obtenerEstadistica(@PathVariable Long id ){
+    public ResponseEntity<SolicitudOutputDTO> obtenerEstadistica(@PathVariable Long id ){
         return ResponseEntity.ok(this.solicitudService.obtenerSolicitudPorId(id));
     }
 }

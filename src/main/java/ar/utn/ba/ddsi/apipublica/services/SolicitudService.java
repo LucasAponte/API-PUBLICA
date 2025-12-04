@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudCreateDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.SolicitudEliminacion;
@@ -10,6 +11,7 @@ import ar.utn.ba.ddsi.apipublica.models.repository.SolicitudRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,15 +44,20 @@ public class SolicitudService implements ISolicitudService{
     }
 
     @Override
-    public List<SolicitudEliminacion> listarSolicitudes() {
-        return solicitudRepository.findAll();
+    public List<SolicitudOutputDTO> listarSolicitudes() {
+        List<SolicitudEliminacion> solicitudes = solicitudRepository.findAll();
+        List<SolicitudOutputDTO> solicitudesDTO = new ArrayList<>();
+        solicitudes.forEach(solicitud -> {
+            solicitudesDTO.add(new SolicitudOutputDTO(solicitud));
+        });
+        return solicitudesDTO;
     }
 
     @Override
-    public SolicitudEliminacion obtenerSolicitudPorId(Long id) {
+    public SolicitudOutputDTO obtenerSolicitudPorId(Long id) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
-        return solicitud;
+        return new SolicitudOutputDTO(solicitud);
 
     }
 }
