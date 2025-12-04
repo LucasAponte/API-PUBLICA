@@ -1,14 +1,12 @@
 package ar.utn.ba.ddsi.apipublica.models.dtos;
 
-import ar.utn.ba.ddsi.apipublica.models.entities.Adjunto;
 import ar.utn.ba.ddsi.apipublica.models.entities.EnumTipoHecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
-import ar.utn.ba.ddsi.apipublica.models.entities.Fuente;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -24,7 +22,7 @@ public class HechoOutputDTO {
     private String tipoHecho;
     private String fuente; // nueva propiedad: fuente del hecho
     private List<AdjuntoDTO> adjuntos = new java.util.ArrayList<>();
-    public HechoOutputDTO() {
+    public HechoOutputDTO(Optional<Hecho> hecho) {
     }
 
     public HechoOutputDTO(Hecho hecho) {

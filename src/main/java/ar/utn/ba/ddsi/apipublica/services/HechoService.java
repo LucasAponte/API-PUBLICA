@@ -127,6 +127,17 @@ public class HechoService implements IHechoService {
     }
 
     @Override
+    public HechoOutputDTO obtenerHechoPorId(Long id) {
+        Hecho hecho = hechoRepository.findById(id).orElse(null);
+
+        if (hecho != null) {
+            return new HechoOutputDTO(hecho);
+        } else {
+            throw new RuntimeException("Hecho no encontrado con id: " + id);
+        }
+    }
+
+    @Override
     public List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter) {
         System.out.println("Buscando hechos con filtro");
 

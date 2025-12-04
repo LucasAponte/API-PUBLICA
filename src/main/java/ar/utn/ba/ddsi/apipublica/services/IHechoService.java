@@ -11,4 +11,6 @@ public interface IHechoService {
     List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter);
 
     Hecho crearHecho(HechoCreateDTO dto);
+
+    HechoOutputDTO obtenerHechoPorId(Long id);
 }

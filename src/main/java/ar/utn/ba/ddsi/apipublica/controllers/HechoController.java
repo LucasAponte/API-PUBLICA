@@ -37,6 +37,7 @@ public class HechoController {
 
     //GET /hechos con filtros por query params
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
     public ResponseEntity<?> listarHechosSegun(
             @RequestParam(value = "categoria", required = false) String categoria,
             @RequestParam(value = "fecha_reporte_desde", required = false) String fechaReporteDesde,
@@ -58,6 +59,22 @@ public class HechoController {
             return ResponseEntity.badRequest().body(iae.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
+        }
+    }
+    @GetMapping("/{id}")
+    @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
+    public ResponseEntity<Object> obtenerHecho(@PathVariable("id") Long id) {
+        try {
+            HechoOutputDTO hechoDTO = hechoService.obtenerHechoPorId(id);
+            return ResponseEntity.status(HttpStatus.OK).body(hechoDTO);
+
+        } catch (RuntimeException ex) {
+            // Asumimos que si salta la excepción del service es porque no existe (404)
+            // Podrías refinar esto creando una excepción personalizada 'ResourceNotFoundException'
+            if (ex.getMessage().contains("no encontrado")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error obteniendo el hecho: " + ex.getMessage());
         }
     }
 }
