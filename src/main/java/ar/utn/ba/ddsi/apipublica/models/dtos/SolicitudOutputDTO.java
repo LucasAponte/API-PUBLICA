@@ -29,7 +29,7 @@ public class SolicitudOutputDTO {
         // Convierte el EnumEstadoSol a su representación en String
         this.estadoSolicitud = solicitud.getEstado().name();
         // Asumiendo que 'solicitante' de SolicitudEliminacion no es nulo y tiene un método getId()
-        this.id_contribuyente = solicitud.getSolicitante() != null ? solicitud.getSolicitante().getId_contribuyente() : null;
+        this.id_contribuyente = solicitud.getId_solicitante() != null ? solicitud.getId_solicitante() : null;
         this.spam = solicitud.isSpam();
     }
 }

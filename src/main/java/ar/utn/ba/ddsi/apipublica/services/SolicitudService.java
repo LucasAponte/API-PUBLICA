@@ -4,7 +4,6 @@ import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudCreateDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.SolicitudEliminacion;
-import ar.utn.ba.ddsi.apipublica.models.repository.ContribuyenteRepository;
 import ar.utn.ba.ddsi.apipublica.models.repository.HechoRepository;
 import ar.utn.ba.ddsi.apipublica.models.repository.SolicitudRepository;
 import org.springframework.stereotype.Service;
