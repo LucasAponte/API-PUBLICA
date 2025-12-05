@@ -4,15 +4,12 @@ package ar.utn.ba.ddsi.apipublica.controllers;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.services.ColeccionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,7 @@ public class ColeccionController {
     }
 
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Object> listarColecciones(
             @RequestParam(value = "titulo", required = false) String titulo,
             @RequestParam(value = "descripcion", required = false) String descripcion,
@@ -47,6 +45,7 @@ public class ColeccionController {
     }
 
     @GetMapping("/{coleccionID}/hechos")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Object> listarHechosDeUnaColeccion(
             @PathVariable("coleccionID") Long coleccionID,
             @RequestParam(required = false) String modoNavegacion,
@@ -63,13 +62,33 @@ public class ColeccionController {
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre);
 
         try {
-            List<Hecho> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
+            List<HechoOutputDTO> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
+        }
+    }
+    @GetMapping("/{coleccionID}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Object> obtenerColeccionPorId(
+            @PathVariable("coleccionID") Long coleccionID) {
+
+        try {
+            ColeccionOutputDTO coleccion = coleccionService.buscarColeccionPorId(coleccionID);
+
+            if (coleccion == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("La colección con ID " + coleccionID + " no existe");
+            }
+
+            return ResponseEntity.ok(coleccion);
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                    .body("Error obteniendo la colección: " + ex.getMessage());
         }
     }
 }

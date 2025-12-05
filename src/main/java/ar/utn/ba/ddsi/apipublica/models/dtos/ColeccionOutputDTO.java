@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ColeccionOutputDTO {
 
-    private Long id;
+    private Long id_coleccion;
     private String titulo;
     private String descripcion;
     private List<String> fuentes = new ArrayList<>(); // nombres de las fuentes
@@ -34,7 +34,7 @@ public class ColeccionOutputDTO {
     public ColeccionOutputDTO(Coleccion coleccion) {
         if (coleccion == null) return;
 
-        this.id = coleccion.getId_coleccion();
+        this.id_coleccion = coleccion.getId_coleccion();
         this.titulo = coleccion.getTitulo();
         this.descripcion = coleccion.getDescripcion();
         this.tipoDeAlgoritmo = coleccion.getTipoDeAlgoritmo() != null ? coleccion.getTipoDeAlgoritmo().name() : null;
@@ -98,7 +98,7 @@ public class ColeccionOutputDTO {
     @Override
     public String toString() {
         return "ColeccionOutputDTO{" +
-                "id=" + id +
+                "id=" + id_coleccion +
                 ", titulo='" + titulo + '\'' +
                 ", descripcion='" + descripcion + '\'' +
                 ", fuentes=" + fuentes +

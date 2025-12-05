@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.apipublica.services;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.ColeccionFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
 import ar.utn.ba.ddsi.apipublica.models.repository.FuenteRepository;
@@ -22,7 +23,7 @@ public class ColeccionService {
         this.fuenteRepository = fuenteRepository;
     }
 
-    public List<Hecho> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
+    public List<HechoOutputDTO> buscarHechosSegun(HechoFilterDTO filter, String modoDeNavegacion, Long coleccionId) {
         if (coleccionId == null) {
             throw new IllegalArgumentException("El ID de la colección no puede ser nulo");
         }
@@ -58,7 +59,7 @@ public class ColeccionService {
 
             }
 
-            return coleccionRepository.buscarEnColeccionSegun(
+            return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
                     coleccionId,
                     categoriaNombre,
                     filter.getFechaReporteDesdeParsed(),
@@ -70,7 +71,7 @@ public class ColeccionService {
                     delta,
                     curado,
                     textoLibre
-            );
+            ));
         }
 
     public List<ColeccionOutputDTO> buscarColeccionesSegun(ColeccionFilterDTO filter) {
@@ -110,5 +111,22 @@ public class ColeccionService {
             coleccionesDTO.add(new ColeccionOutputDTO(coleccion));
         });
         return coleccionesDTO;
+    }
+    public ColeccionOutputDTO buscarColeccionPorId(Long id) {
+        return coleccionRepository.findById(id)
+                .map(ColeccionOutputDTO::new)
+                .orElse(null);
+    }
+    public List<HechoOutputDTO> PasarAHechosDTO(List<Hecho> hechos) {
+        System.out.println("Convirtiendo "+ hechos.size() +"hechos a DTO");
+        List<HechoOutputDTO> resultadoDTO = new ArrayList<>();
+        if(hechos==null) return resultadoDTO;
+        hechos.forEach(h -> {
+            HechoOutputDTO dto = new HechoOutputDTO(h);
+            System.out.println("Instancia " + dto);
+            resultadoDTO.add(dto);
+            System.out.println("Hecho convertido a DTO: " + dto);
+        });
+        return resultadoDTO;
     }
 }
