@@ -29,12 +29,13 @@ public class HechoOutputDTO {
         this.id_hecho= hecho.getId_hecho();
         this.titulo = hecho.getTitulo();
         this.descripcion = hecho.getDescripcion();
-        this.categoria = hecho.getCategoria().getNombre();
-        this.fecha = hecho.getFecha().toString();
-        this.fechaDeCarga = hecho.getFechaDeCarga().toString();
+        //Estos != null ver si lo tengo que sacar
+        this.categoria = hecho.getCategoria() !=null ?hecho.getCategoria().getNombre() : "";
+        this.fecha = hecho.getFecha() != null ? hecho.getFecha().toString() : "";
+        this.fechaDeCarga = hecho.getFechaDeCarga() != null ? hecho.getFechaDeCarga().toString() : "";
         this.etiqueta = hecho.getEtiqueta() != null ? hecho.getEtiqueta().getNombre(): null;
-        this.ubicacion = new UbicacionOutputDTO(hecho.getUbicacion());
-        this.fuente = hecho.getFuente().getNombre();
+        this.ubicacion = hecho.getUbicacion() != null ? (new UbicacionOutputDTO( hecho.getUbicacion())): null;
+        this.fuente = hecho.getFuente() !=null ? hecho.getFuente().getNombre(): "";
         if(hecho.getTipoHecho()!=null) {
             System.out.println("Tipo de hecho: " + hecho.getTipoHecho().name());
             this.tipoHecho = hecho.getTipoHecho().name();

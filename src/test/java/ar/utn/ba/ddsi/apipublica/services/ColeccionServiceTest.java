@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.apipublica.services;
 
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
+import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Coleccion;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.repository.ColeccionRepository;
@@ -15,13 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ColeccionServiceTest {
@@ -32,15 +29,19 @@ class ColeccionServiceTest {
     @InjectMocks
     private ColeccionService coleccionService;
 
-        // verifica que sin modo aplica filtros y navega sin curado
+    /*** 1) Delegación correcta cuando modo es NOCURADO ***/
     @Test
     void buscarHechosSegunDelegatesWhenModoNoCurado() {
         Long coleccionId = 42L;
-        when(coleccionRepository.findById(coleccionId)).thenReturn(Optional.of(new Coleccion()));
-        List<Hecho> expected = List.of(new Hecho());
+
+        when(coleccionRepository.findById(coleccionId))
+                .thenReturn(Optional.of(new Coleccion()));
+
+        // Devuelve lista de entidades, luego el service las convierte a DTOs
         when(coleccionRepository.buscarEnColeccionSegun(
-                any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
-        )).thenReturn(expected);
+                any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any()
+        )).thenReturn(List.of(new Hecho()));
 
         HechoFilterDTO filter = new HechoFilterDTO(
                 "   Salud",
@@ -50,14 +51,18 @@ class ColeccionServiceTest {
                 null,
                 null,
                 null,
-                "  vacuna  "
+                "   vacuna  "
         );
 
-        List<Hecho> result = coleccionService.buscarHechosSegun(filter, null, coleccionId);
-        assertEquals(expected, result);
+        List<HechoOutputDTO> result =
+                coleccionService.buscarHechosSegun(filter, "NOCURADO", coleccionId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof HechoOutputDTO);
 
         verify(coleccionRepository).buscarEnColeccionSegun(
-                eq(coleccionId),
+                eq(42L),
                 eq("Salud"),
                 eq(LocalDate.parse("2024-02-01")),
                 eq(LocalDate.parse("2024-02-28")),
@@ -65,18 +70,23 @@ class ColeccionServiceTest {
                 isNull(),
                 isNull(),
                 isNull(),
-                isNull(),
+                isNull(),     // delta
+                eq(false),    // curado = FALSE
                 eq("vacuna")
         );
     }
 
-        // confirma que modo curado fuerza consensuado verdadero
+    /*** 2) Modo CURADO fuerza consensuado true ***/
     @Test
     void buscarHechosSegunInterpretaModoCurado() {
         Long coleccionId = 7L;
-        when(coleccionRepository.findById(coleccionId)).thenReturn(Optional.of(new Coleccion()));
+
+        when(coleccionRepository.findById(coleccionId))
+                .thenReturn(Optional.of(new Coleccion()));
+
         when(coleccionRepository.buscarEnColeccionSegun(
-                any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any()
         )).thenReturn(List.of());
 
         HechoFilterDTO filter = new HechoFilterDTO();
@@ -84,8 +94,10 @@ class ColeccionServiceTest {
         coleccionService.buscarHechosSegun(filter, "CURADO", coleccionId);
 
         ArgumentCaptor<Boolean> curadoCaptor = ArgumentCaptor.forClass(Boolean.class);
+
         verify(coleccionRepository).buscarEnColeccionSegun(
-                eq(coleccionId),
+                eq(7L),
+                isNull(),
                 isNull(),
                 isNull(),
                 isNull(),
@@ -96,17 +108,51 @@ class ColeccionServiceTest {
                 curadoCaptor.capture(),
                 isNull()
         );
+
         assertEquals(Boolean.TRUE, curadoCaptor.getValue());
     }
 
-        // valida que un modo invalido dispara excepcion
+    /*** 3) Modo inválido dispara excepción ***/
     @Test
     void buscarHechosSegunLanzaErrorModoInvalido() {
         Long coleccionId = 9L;
-        when(coleccionRepository.findById(coleccionId)).thenReturn(Optional.of(new Coleccion()));
+        when(coleccionRepository.findById(coleccionId))
+                .thenReturn(Optional.of(new Coleccion()));
+
         HechoFilterDTO filter = new HechoFilterDTO();
 
         assertThrows(IllegalArgumentException.class,
-                () -> coleccionService.buscarHechosSegun(filter, "DESCONOCIDO", coleccionId));
+                () -> coleccionService.buscarHechosSegun(filter, "XXXX", coleccionId));
+    }
+
+    /*** 4) Colección inexistente lanza error ***/
+    @Test
+    void buscarHechosSegunErrorColeccionNoExiste() {
+        when(coleccionRepository.findById(100L)).thenReturn(Optional.empty());
+
+        HechoFilterDTO filter = new HechoFilterDTO();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> coleccionService.buscarHechosSegun(filter, null, 100L));
+    }
+
+    /*** 5) Devuelve DTOs aunque el repo devuelva lista vacía ***/
+    @Test
+    void buscarHechosSegunDevuelveListaDTOVacia() {
+        Long id = 1L;
+
+        when(coleccionRepository.findById(id))
+                .thenReturn(Optional.of(new Coleccion()));
+
+        when(coleccionRepository.buscarEnColeccionSegun(
+                any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any()
+        )).thenReturn(List.of());
+
+        List<HechoOutputDTO> result =
+                coleccionService.buscarHechosSegun(new HechoFilterDTO(), null, id);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }
