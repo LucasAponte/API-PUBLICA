@@ -20,6 +20,7 @@ public class SolicitudController {
     }
 
     @PostMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudCreateDTO dto) {
         try {
             System.out.println("Iniciando solicitud" + dto.getIdContribuyente() + " - " + dto.getIdHecho()
@@ -43,6 +44,7 @@ public class SolicitudController {
     }
 
     @GetMapping ("/{id}")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<SolicitudOutputDTO> obtenerEstadistica(@PathVariable Long id ){
         return ResponseEntity.ok(this.solicitudService.obtenerSolicitudPorId(id));
     }
