@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/colecciones")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ColeccionController {
     // ● Consulta de hechos dentro de una colección.
     private final ColeccionService coleccionService;
@@ -48,7 +49,7 @@ public class ColeccionController {
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Object> listarHechosDeUnaColeccion(
             @PathVariable("coleccionID") Long coleccionID,
-            @RequestParam(required = false) String modoNavegacion,
+            @RequestParam(value = "modoNavegacion" , required = false) String modoNavegacion,
             @RequestParam(value = "categoria", required = false) String categoria,
             @RequestParam(value = "fecha_reporte_desde", required = false) String fechaReporteDesde,
             @RequestParam(value = "fecha_reporte_hasta", required = false) String fechaReporteHasta,
@@ -56,11 +57,9 @@ public class ColeccionController {
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
             @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
             @RequestParam(value = "ubicacion_longitud", required = false) String lonStr,
-            @RequestParam(value = "q", required = false) String textoLibre
-    ) {
+            @RequestParam(value = "q", required = false) String textoLibre) {
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre);
-
         try {
             List<HechoOutputDTO> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);

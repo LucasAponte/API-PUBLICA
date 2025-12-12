@@ -71,7 +71,7 @@ public class ColeccionOutputDTO {
                     }
                 } catch (Exception ex) {
                     // Si la construcción falla (p. ej. por algún campo null en Hecho), hacemos un mapeo mínimo seguro
-                    HechoOutputDTO safe = new HechoOutputDTO(hecho);
+                    /*HechoOutputDTO safe = new HechoOutputDTO(hecho);
                     safe.setTitulo(hecho.getTitulo());
                     safe.setDescripcion(hecho.getDescripcion());
                     safe.setFuente(hecho.getFuente() != null ? hecho.getFuente().getNombre() : null);
@@ -87,12 +87,13 @@ public class ColeccionOutputDTO {
                     this.hechos.add(safe);
                     if (Boolean.TRUE.equals(hxc.getConsensuado())) {
                         this.hechosConsensuados.add(safe);
-                    }
+                    }*/
+                    continue;
                 }
             }
         }
 
-        this.cantidadHechos = this.hechos.size();
+        this.cantidadHechos = this.hechos.toArray().length;
     }
 
     @Override
