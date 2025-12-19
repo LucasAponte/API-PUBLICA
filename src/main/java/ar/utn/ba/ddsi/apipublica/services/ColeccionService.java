@@ -58,6 +58,10 @@ public class ColeccionService {
                 textoLibre = filter.getTextoLibre().trim();
 
             }
+            String tipoDeFuente = null;
+            if (filter.getTipoFuente() != null && !filter.getTipoFuente().isBlank()) {
+                tipoDeFuente = filter.getTipoFuente().trim();
+            }
 
             return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
                     coleccionId,
@@ -70,7 +74,8 @@ public class ColeccionService {
                     filter.getUbicacionLongitudParsed(),
                     delta,
                     curado,
-                    textoLibre
+                    textoLibre,
+                    tipoDeFuente
             ));
         }
 

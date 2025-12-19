@@ -14,21 +14,31 @@ import java.util.List;
 @Repository
 public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
     //Revisar Consulta
-    @Query("SELECT hxc.hecho FROM HechoXColeccion hxc " +
-            "JOIN hxc.hecho h " +
-            "WHERE hxc.coleccion.id_coleccion = :coleccionId " +
-            "AND (:curado IS NULL OR hxc.consensuado = :curado) " +
-            "AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
-            "AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde) " +
-            "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
-            "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
-            "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
-            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta)) " +
-            "AND (:texto IS NULL OR (" +
-                "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
-                "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
-                "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
-            "))")
+    @Query("""
+        SELECT hxc.hecho
+        FROM HechoXColeccion hxc
+        JOIN hxc.hecho h
+        LEFT JOIN h.fuente f
+        WHERE hxc.coleccion.id_coleccion = :coleccionId
+        AND (:curado IS NULL OR hxc.consensuado = :curado)
+        AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre))
+        AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde)
+        AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta)
+        AND (:acaDesde IS NULL OR h.fecha >= :acaDesde)
+        AND (:acaHasta IS NULL OR h.fecha <= :acaHasta)
+        AND (:lat IS NULL OR :lon IS NULL 
+             OR (ABS(h.ubicacion.latitud - :lat) <= :delta 
+                 AND ABS(h.ubicacion.longitud - :lon) <= :delta))
+        AND (
+            :texto IS NULL OR
+            LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) OR
+            LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%'))
+        )
+        AND (
+            :tipoDeFuente IS NULL OR
+            LOWER(f.tipoFuente) LIKE LOWER(CONCAT('%', :tipo, '%'))
+        )
+        """)
     List<Hecho> buscarEnColeccionSegun(
             @Param("coleccionId") Long coleccionId,
             @Param("categoriaNombre") String categoriaNombre,
@@ -40,7 +50,8 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("lon") Float lon,
             @Param("delta") Float delta,
             @Param("curado") Boolean curado,
-            @Param("texto") String texto
+            @Param("texto") String texto,
+            @Param("tipoDeFuente") String tipo
     );
 
     // Nuevo: búsqueda de colecciones con filtros opcionales

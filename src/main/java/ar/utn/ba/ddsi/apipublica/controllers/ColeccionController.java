@@ -57,9 +57,13 @@ public class ColeccionController {
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
             @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
             @RequestParam(value = "ubicacion_longitud", required = false) String lonStr,
-            @RequestParam(value = "q", required = false) String textoLibre) {
+            @RequestParam(value = "q", required = false) String textoLibre,
+            @RequestParam(required = false) String tipoDeFuente)
+
+    {
+
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
-                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre);
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre,tipoDeFuente);
         try {
             List<HechoOutputDTO> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
