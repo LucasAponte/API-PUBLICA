@@ -20,17 +20,14 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
-            "AND (h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA) "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
-            "AND h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA " +
+            "AND (h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
+            "OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA) " +
             "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta))"+
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
-            "))AND (\n" +
-            "            :tipoDeFuente IS NULL OR\n" +
-            "            LOWER(f.tipoFuente) LIKE LOWER(CONCAT('%', :tipoDeFuente, '%'))\n" +
-            "        )")
+            "))")
     List<Hecho> buscarHechosSegun(
             @Param("categoriaNombre") String categoriaNombre,
             @Param("repDesde") LocalDate repDesde,
@@ -42,8 +39,10 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             @Param("delta") Float delta,
             @Param("texto") String texto
     );
+
+
     @Query("SELECT h FROM Hecho h " +
-            "WHERE h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA " +
-            "AND h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA ")
+            "WHERE h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)\n" +
+            "OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA ")
     List<Hecho> traerHechosNORechazados();
 }
