@@ -46,11 +46,12 @@ public class HechoController {
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
             @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
             @RequestParam(value = "ubicacion_longitud", required = false) String lonStr,
-            @RequestParam(value = "q", required = false) String textoLibre //Titulo,Descripcion,Fuente, esasa cosas son las que busca el texto libre
-    ) {
-        HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
-                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre);
+            @RequestParam(value = "q", required = false) String textoLibre, //Titulo,Descripcion,Fuente, esasa cosas son las que busca el texto libre
+            @RequestParam(value = "tipoFuente", required=false) String tipoFuente)
+    {
 
+        HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre,tipoFuente);
         try {
             List<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);

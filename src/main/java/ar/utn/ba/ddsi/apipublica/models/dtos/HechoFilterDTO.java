@@ -12,6 +12,7 @@ public class HechoFilterDTO {
     private String ubicacionLatitud;
     private String ubicacionLongitud;
     private String textoLibre;
+    private String tipoFuente;
 
     // Campos parseados (resultado de la validación)
     private LocalDate fechaReporteDesdeParsed;
@@ -20,6 +21,7 @@ public class HechoFilterDTO {
     private LocalDate fechaAcontecimientoHastaParsed;
     private Float ubicacionLatitudParsed;
     private Float ubicacionLongitudParsed;
+    private String tipoFuenteParsed;
 
     // Constructor sin-argumentos necesario para usos donde no se pasan filtros
     public HechoFilterDTO() {}
@@ -32,7 +34,8 @@ public class HechoFilterDTO {
             String fechaAcontecimientoHasta,
             String ubicacionLatitud,
             String ubicacionLongitud,
-            String textoLibre
+            String textoLibre,
+            String tipoFuente
     ) {
         this.categoria = categoria;
         this.fechaReporteDesde = fechaReporteDesde;
@@ -42,7 +45,49 @@ public class HechoFilterDTO {
         this.ubicacionLatitud = ubicacionLatitud;
         this.ubicacionLongitud = ubicacionLongitud;
         this.textoLibre = textoLibre;
+        this.tipoFuente= tipoFuente;
     }
+
+    public String getTipoFuente() {
+        return tipoFuente;
+    }
+
+    public void setTipoFuente(String tipoFuente) {
+        this.tipoFuente = tipoFuente;
+    }
+
+    public void setFechaReporteDesdeParsed(LocalDate fechaReporteDesdeParsed) {
+        this.fechaReporteDesdeParsed = fechaReporteDesdeParsed;
+    }
+
+    public void setFechaReporteHastaParsed(LocalDate fechaReporteHastaParsed) {
+        this.fechaReporteHastaParsed = fechaReporteHastaParsed;
+    }
+
+    public void setFechaAcontecimientoDesdeParsed(LocalDate fechaAcontecimientoDesdeParsed) {
+        this.fechaAcontecimientoDesdeParsed = fechaAcontecimientoDesdeParsed;
+    }
+
+    public void setFechaAcontecimientoHastaParsed(LocalDate fechaAcontecimientoHastaParsed) {
+        this.fechaAcontecimientoHastaParsed = fechaAcontecimientoHastaParsed;
+    }
+
+    public void setUbicacionLatitudParsed(Float ubicacionLatitudParsed) {
+        this.ubicacionLatitudParsed = ubicacionLatitudParsed;
+    }
+
+    public void setUbicacionLongitudParsed(Float ubicacionLongitudParsed) {
+        this.ubicacionLongitudParsed = ubicacionLongitudParsed;
+    }
+
+    public String getTipoFuenteParsed() {
+        return tipoFuenteParsed;
+    }
+
+    public void setTipoFuenteParsed(String tipoFuenteParsed) {
+        this.tipoFuenteParsed = tipoFuenteParsed;
+    }
+
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
@@ -135,6 +180,7 @@ public class HechoFilterDTO {
                 && this.fechaAcontecimientoHastaParsed == null
                 && this.ubicacionLatitudParsed == null
                 && this.ubicacionLongitudParsed == null
+                && this.tipoFuente==null
         );
     }
 }
