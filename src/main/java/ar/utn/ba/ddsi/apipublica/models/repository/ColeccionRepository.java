@@ -36,7 +36,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
         )
         AND (
             :tipoDeFuente IS NULL OR
-            LOWER(f.tipoFuente) LIKE LOWER(CONCAT('%', :tipo, '%'))
+            LOWER(f.tipoFuente) LIKE LOWER(CONCAT('%', :tipoDeFuente, '%'))
         )
         """)
     List<Hecho> buscarEnColeccionSegun(
@@ -51,7 +51,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("delta") Float delta,
             @Param("curado") Boolean curado,
             @Param("texto") String texto,
-            @Param("tipoDeFuente") String tipo
+            @Param("tipoDeFuente") String tipoDeFuente
     );
 
     // Nuevo: búsqueda de colecciones con filtros opcionales

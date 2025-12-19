@@ -26,7 +26,10 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
-            "))")
+            "))AND (\n" +
+            "            :tipoDeFuente IS NULL OR\n" +
+            "            LOWER(f.tipoFuente) LIKE LOWER(CONCAT('%', :tipoDeFuente, '%'))\n" +
+            "        )")
     List<Hecho> buscarHechosSegun(
             @Param("categoriaNombre") String categoriaNombre,
             @Param("repDesde") LocalDate repDesde,
