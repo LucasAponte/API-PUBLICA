@@ -41,7 +41,6 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
 
 
     @Query("SELECT h FROM Hecho h " +
-            "WHERE h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)\n" +
-            "OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA ")
+            "WHERE h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA")            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)\n" +
     List<Hecho> traerHechosNORechazados();
 }
