@@ -131,18 +131,22 @@ public class HechoService implements IHechoService {
         Hecho hecho = hechoRepository.findById(id).orElse(null);
 
         if (hecho != null) {
-            return new HechoOutputDTO(hecho);
-        } else {
+            //podria ser una query del repo?
+            if (hecho.getEstado() != EnumEstadoHecho.BAJA) {
+                return new HechoOutputDTO(hecho);
+            }
+            else throw new RuntimeException("hecho rechazado");
+        }else {
             throw new RuntimeException("Hecho no encontrado con id: " + id);
         }
     }
-
     @Override
     public List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter) {
         System.out.println("Buscando hechos con filtro");
 
         if (filter == null) {
-            List<Hecho> all = hechoRepository.findAll();
+            //List<Hecho> all = hechoRepository.findAll().stream().filter(hecho-> hecho.getEstado()!= EnumEstadoHecho.RECHAZADA).toList();
+            List<Hecho> all = hechoRepository.traerHechosNORechazados();
             return PasarAHechosDTO(all);
         }
 

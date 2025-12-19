@@ -4,6 +4,7 @@ package ar.utn.ba.ddsi.apipublica.models.repository;
 import ar.utn.ba.ddsi.apipublica.models.entities.Coleccion;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.models.entities.EnumTipoDeAlgoritmo;
+import ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
     @Query("SELECT hxc.hecho FROM HechoXColeccion hxc " +
             "JOIN hxc.hecho h " +
             "WHERE hxc.coleccion.id_coleccion = :coleccionId " +
+            "AND h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA " +
             "AND (:curado IS NULL OR hxc.consensuado = :curado) " +
             "AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
             "AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde) " +

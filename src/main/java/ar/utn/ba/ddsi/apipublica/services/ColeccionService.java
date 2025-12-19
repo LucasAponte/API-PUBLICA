@@ -52,14 +52,15 @@ public class ColeccionService {
         if (modoDeNavegacion != null) {
             if (modoDeNavegacion.equalsIgnoreCase("CURADA")) curado = Boolean.TRUE;
             else if (modoDeNavegacion.equalsIgnoreCase("IRRESTRICTA")) curado = Boolean.FALSE;
-            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);}
-            String textoLibre = null;
-            if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
-                textoLibre = filter.getTextoLibre().trim();
+            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);
+        }
+        String textoLibre = null;
+        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
+            textoLibre = filter.getTextoLibre().trim();
 
-            }
+        }
 
-            return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
+        return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
                     coleccionId,
                     categoriaNombre,
                     filter.getFechaReporteDesdeParsed(),
