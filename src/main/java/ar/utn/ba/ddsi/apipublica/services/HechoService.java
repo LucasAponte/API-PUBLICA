@@ -5,8 +5,11 @@ import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -140,16 +143,42 @@ public class HechoService implements IHechoService {
             throw new RuntimeException("Hecho no encontrado con id: " + id);
         }
     }
+
     @Override
-    public List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter) {
+    public Page<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter, int page, int size) {
         System.out.println("Buscando hechos con filtro");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fechaDeCarga").descending());
+        Page<Hecho> paginaResultados;
 
         if (filter == null) {
             //List<Hecho> all = hechoRepository.findAll().stream().filter(hecho-> hecho.getEstado()!= EnumEstadoHecho.RECHAZADA).toList();
-            List<Hecho> all = hechoRepository.traerHechosNORechazados();
-            return PasarAHechosDTO(all);
-        }
+            paginaResultados = hechoRepository.traerHechosNORechazados(pageable);
+        } else {
+            filter.validateAndParse();
 
+            String categoriaNombre = (filter.getCategoria() != null && !filter.getCategoria().isBlank())
+                    ? filter.getCategoria().trim() : null;
+
+            String textoLibre = (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank())
+                    ? filter.getTextoLibre().trim() : null;
+
+            Float delta = (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null)
+                    ? 0.01f : null;
+
+            paginaResultados = hechoRepository.buscarHechosSegun(
+                    categoriaNombre,
+                    filter.getFechaReporteDesdeParsed(),
+                    filter.getFechaReporteHastaParsed(),
+                    filter.getFechaAcontecimientoDesdeParsed(),
+                    filter.getFechaAcontecimientoHastaParsed(),
+                    filter.getProvincia(),
+                    delta,
+                    textoLibre,
+                    pageable // Pasamos el pageable al repo
+            );
+        }
+        /*
         // Validar y parsear usando el DTO
         filter.validateAndParse();
 
@@ -184,8 +213,11 @@ public class HechoService implements IHechoService {
         System.out.println("Resultados encontrados: " + (resultados == null ? 0 : resultados.size()));
         List<HechoOutputDTO> resultadosDTO= PasarAHechosDTO(resultados);
         System.out.println("Resultados pasados: " + resultadosDTO.size());
-        return resultadosDTO;
+
+         */
+        return paginaResultados.map(HechoOutputDTO::new);
     }
+
     public List<HechoOutputDTO> PasarAHechosDTO(List<Hecho> hechos) {
         System.out.println("Convirtiendo "+ hechos.size() +"hechos a DTO");
         List<HechoOutputDTO> resultadoDTO = new ArrayList<>();

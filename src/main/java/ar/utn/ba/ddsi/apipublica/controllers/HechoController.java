@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.services.IHechoService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,16 +45,17 @@ public class HechoController {
             @RequestParam(value = "fecha_reporte_hasta", required = false) String fechaReporteHasta,
             @RequestParam(value = "fecha_acontecimiento_desde", required = false) String fechaAcontecimientoDesde,
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
-            @RequestParam(value = "ubicacion_latitud", required = false) String latStr,
-            @RequestParam(value = "ubicacion_longitud", required = false) String lonStr,
+            @RequestParam(value = "provincia", required = false) String provincia,
             @RequestParam(value = "q", required = false) String textoLibre, //Titulo,Descripcion,Fuente, esasa cosas son las que busca el texto libre
-            @RequestParam(value = "tipoFuente", required=false) String tipoFuente)
+            @RequestParam(value = "tipoFuente", required=false) String tipoFuente,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
     {
 
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
-                fechaAcontecimientoDesde, fechaAcontecimientoHasta, latStr, lonStr, textoLibre,tipoFuente);
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,tipoFuente);
         try {
-            List<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter);
+            Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
         } catch (IllegalArgumentException iae) {

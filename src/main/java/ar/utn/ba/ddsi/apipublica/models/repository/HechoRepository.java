@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.apipublica.models.repository;
 
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,26 +23,26 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
             "AND (h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA) "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
-            "AND (:lat IS NULL OR :lon IS NULL OR (ABS(h.ubicacion.latitud - :lat) <= :delta AND ABS(h.ubicacion.longitud - :lon) <= :delta))"+
+            "AND (h.ubicacion IS NOT NULL AND h.ubicacion.provincia.nombre = :prov)"+
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR (h.fuente IS NOT NULL AND LOWER(h.fuente.nombre) LIKE LOWER(CONCAT('%', :texto, '%')))" +
             "))")
-    List<Hecho> buscarHechosSegun(
+    Page<Hecho> buscarHechosSegun(
             @Param("categoriaNombre") String categoriaNombre,
             @Param("repDesde") LocalDate repDesde,
             @Param("repHasta") LocalDate repHasta,
             @Param("acaDesde") LocalDate acaDesde,
             @Param("acaHasta") LocalDate acaHasta,
-            @Param("lat") Float lat,
-            @Param("lon") Float lon,
+            @Param("prov") String prov,
             @Param("delta") Float delta,
-            @Param("texto") String texto
+            @Param("texto") String texto,
+            Pageable pageable
     );
 
 
     @Query("SELECT h FROM Hecho h " +
             "WHERE h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA")            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)\n" +
-    List<Hecho> traerHechosNORechazados();
+    Page<Hecho> traerHechosNORechazados(Pageable pageable);
 }

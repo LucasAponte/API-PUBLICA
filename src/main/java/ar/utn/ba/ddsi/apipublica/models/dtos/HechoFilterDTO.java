@@ -9,8 +9,7 @@ public class HechoFilterDTO {
     private String fechaReporteHasta;
     private String fechaAcontecimientoDesde;
     private String fechaAcontecimientoHasta;
-    private String ubicacionLatitud;
-    private String ubicacionLongitud;
+    private String provincia;
     private String textoLibre;
     private String tipoFuente;
 
@@ -32,8 +31,7 @@ public class HechoFilterDTO {
             String fechaReporteHasta,
             String fechaAcontecimientoDesde,
             String fechaAcontecimientoHasta,
-            String ubicacionLatitud,
-            String ubicacionLongitud,
+            String provincia,
             String textoLibre,
             String tipoFuente
     ) {
@@ -42,8 +40,7 @@ public class HechoFilterDTO {
         this.fechaReporteHasta = fechaReporteHasta;
         this.fechaAcontecimientoDesde = fechaAcontecimientoDesde;
         this.fechaAcontecimientoHasta = fechaAcontecimientoHasta;
-        this.ubicacionLatitud = ubicacionLatitud;
-        this.ubicacionLongitud = ubicacionLongitud;
+        this.provincia = provincia;
         this.textoLibre = textoLibre;
         this.tipoFuente= tipoFuente;
     }
@@ -103,11 +100,13 @@ public class HechoFilterDTO {
     public String getFechaAcontecimientoHasta() { return fechaAcontecimientoHasta; }
     public void setFechaAcontecimientoHasta(String fechaAcontecimientoHasta) { this.fechaAcontecimientoHasta = fechaAcontecimientoHasta; }
 
-    public String getUbicacionLatitud() { return ubicacionLatitud; }
-    public void setUbicacionLatitud(String ubicacionLatitud) { this.ubicacionLatitud = ubicacionLatitud; }
+    public String getProvincia() {
+        return provincia;
+    }
 
-    public String getUbicacionLongitud() { return ubicacionLongitud; }
-    public void setUbicacionLongitud(String ubicacionLongitud) { this.ubicacionLongitud = ubicacionLongitud; }
+    public void setProvincia(){
+        this.provincia = provincia;
+    }
 
     public String getTextoLibre() { return textoLibre; }
     public void setTextoLibre(String textoLibre) { this.textoLibre = textoLibre; }
@@ -139,16 +138,16 @@ public class HechoFilterDTO {
         } catch (DateTimeParseException dte) {
             throw new IllegalArgumentException("Formato de fecha inválido. Use yyyy-MM-dd", dte);
         }
-
-        // Parseo de ubicacion
-        try {
-            if (this.ubicacionLatitud != null && !this.ubicacionLatitud.isBlank())
-                this.ubicacionLatitudParsed = Float.parseFloat(this.ubicacionLatitud);
-            if (this.ubicacionLongitud != null && !this.ubicacionLongitud.isBlank())
-                this.ubicacionLongitudParsed = Float.parseFloat(this.ubicacionLongitud);
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("Latitud o longitud inválida", nfe);
-        }
+//
+//        // Parseo de ubicacion
+//        try {
+//            if (this.ubicacionLatitud != null && !this.ubicacionLatitud.isBlank())
+//                this.ubicacionLatitudParsed = Float.parseFloat(this.ubicacionLatitud);
+//            if (this.ubicacionLongitud != null && !this.ubicacionLongitud.isBlank())
+//                this.ubicacionLongitudParsed = Float.parseFloat(this.ubicacionLongitud);
+//        } catch (NumberFormatException nfe) {
+//            throw new IllegalArgumentException("Latitud o longitud inválida", nfe);
+//        }
 
         // Validaciones lógicas: desde <= hasta si ambos existen
         if (this.fechaReporteDesdeParsed != null && this.fechaReporteHastaParsed != null) {
