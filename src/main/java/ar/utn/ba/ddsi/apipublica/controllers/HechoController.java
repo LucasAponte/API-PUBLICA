@@ -54,6 +54,7 @@ public class HechoController {
 
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,tipoFuente);
+        System.out.println(filter.getCategoria());
         try {
             Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
