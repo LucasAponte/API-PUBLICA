@@ -19,14 +19,14 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             "JOIN hxc.hecho h " +
             "WHERE hxc.coleccion.id_coleccion = :coleccionId " +
             "AND (h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA) "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
-            "AND h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.RECHAZADA " +
             "AND (:curado IS NULL OR hxc.consensuado = :curado) " +
             "AND (:categoriaNombre IS NULL OR LOWER(h.categoria.nombre) = LOWER(:categoriaNombre)) " +
             "AND (:repDesde IS NULL OR h.fechaDeCarga >= :repDesde) " +
             "AND (:repHasta IS NULL OR h.fechaDeCarga <= :repHasta) " +
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
-            "AND (h.ubicacion IS NOT NULL AND h.ubicacion.provincia.nombre = :prov)"+
+            "AND (:provincia IS NULL OR (h.ubicacion IS NOT NULL AND LOWER(h.ubicacion.provincia.nombre) = LOWER(:provincia))) " +
+            "AND (:tipoDeFuente IS NULL OR h.fuente IS NOT NULL AND STR(h.fuente.tipoFuente) = :tipoDeFuente) " +
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
