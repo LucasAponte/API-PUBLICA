@@ -49,10 +49,6 @@ public class ColeccionService {
         }
 
         Boolean curado = null; // null significa no filtrar por consensuado
-        if (modoDeNavegacion != null) {
-            if (modoDeNavegacion.equalsIgnoreCase("CURADA")) curado = Boolean.TRUE;
-            else if (modoDeNavegacion.equalsIgnoreCase("IRRESTRICTA")) curado = Boolean.FALSE;
-            else throw new IllegalArgumentException("Modo Navegacion incorrecto: " + modoDeNavegacion);}
             String textoLibre = null;
             if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
                 textoLibre = filter.getTextoLibre().trim();
@@ -63,19 +59,33 @@ public class ColeccionService {
                 tipoDeFuente = filter.getTipoFuente().trim();
             }
 
-            return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
-                    coleccionId,
-                    categoriaNombre,
-                    filter.getFechaReporteDesdeParsed(),
-                    filter.getFechaReporteHastaParsed(),
-                    filter.getFechaAcontecimientoDesdeParsed(),
-                    filter.getFechaAcontecimientoHastaParsed(),
-                    filter.getProvincia(),
-                    delta,
-                    curado,
-                    textoLibre,
-                    tipoDeFuente
-            ));
+            if (modoDeNavegacion.equalsIgnoreCase("CURADA")) {
+                curado = Boolean.TRUE;
+                return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(
+                        coleccionId,
+                        categoriaNombre,
+                        filter.getFechaReporteDesdeParsed(),
+                        filter.getFechaReporteHastaParsed(),
+                        filter.getFechaAcontecimientoDesdeParsed(),
+                        filter.getFechaAcontecimientoHastaParsed(),
+                        filter.getProvincia(),
+                        delta,
+                        curado,
+                        textoLibre,
+                        tipoDeFuente
+                ));
+            }else {
+                return PasarAHechosDTO(coleccionRepository.buscarEnColeccionIrrestricta(coleccionId,
+                        categoriaNombre,
+                        filter.getFechaReporteDesdeParsed(),
+                        filter.getFechaReporteHastaParsed(),
+                        filter.getFechaAcontecimientoDesdeParsed(),
+                        filter.getFechaAcontecimientoHastaParsed(),
+                        filter.getProvincia(),
+                        delta,
+                        textoLibre,
+                        tipoDeFuente));
+            }
         }
 
     public List<ColeccionOutputDTO> buscarColeccionesSegun(ColeccionFilterDTO filter) {

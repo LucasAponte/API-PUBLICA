@@ -1,9 +1,6 @@
 package ar.utn.ba.ddsi.apipublica.models.dtos;
 
-import ar.utn.ba.ddsi.apipublica.models.entities.Coleccion;
-import ar.utn.ba.ddsi.apipublica.models.entities.Fuente;
-import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
-import ar.utn.ba.ddsi.apipublica.models.entities.HechoXColeccion;
+import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,7 +57,7 @@ public class ColeccionOutputDTO {
             for (HechoXColeccion hxc : coleccion.getHechos()) {
                 if (hxc == null) continue;
                 Hecho hecho = hxc.getHecho();
-                if (hecho == null) continue;
+                if (hecho == null || hecho.getEstado() == EnumEstadoHecho.BAJA) continue;
 
                 // intentamos construir con el constructor existente de HechoOutputDTO
                 try {
@@ -92,7 +89,6 @@ public class ColeccionOutputDTO {
                 }
             }
         }
-
         this.cantidadHechos = this.hechos.toArray().length;
     }
 
