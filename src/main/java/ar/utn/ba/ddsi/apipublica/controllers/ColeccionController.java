@@ -57,16 +57,16 @@ public class ColeccionController {
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
             @RequestParam(value = "provincia", required = false) String provincia,
             @RequestParam(value = "q", required = false) String textoLibre,
-            @RequestParam(required = false) String tipoDeFuente)
+            @RequestParam(value = "fuenteTipo", required = false) String fuenteTipo)
 
     {
-
+        ColeccionOutputDTO cole =  coleccionService.buscarColeccionPorId(coleccionID);
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
-                fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,tipoDeFuente);
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,fuenteTipo);
         try {
             List<HechoOutputDTO> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
-            return ResponseEntity.status(HttpStatus.OK).body(resultados);
-
+            cole.setHechos(resultados);
+            return ResponseEntity.status(HttpStatus.OK).body(cole);
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
         } catch (Exception ex) {

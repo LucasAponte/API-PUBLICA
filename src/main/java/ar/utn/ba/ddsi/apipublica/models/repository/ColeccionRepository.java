@@ -26,7 +26,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             "AND (:acaDesde IS NULL OR h.fecha >= :acaDesde) " +
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
             "AND (:provincia IS NULL OR (h.ubicacion IS NOT NULL AND LOWER(h.ubicacion.provincia.nombre) = LOWER(:provincia))) " +
-            "AND (:tipoDeFuente IS NULL OR h.fuente IS NOT NULL AND STR(h.fuente.tipoFuente) = :tipoDeFuente) " +
+            "AND (:fuenteTipo IS NULL OR h.fuente IS NOT NULL AND STR(h.fuente.tipoFuente) = :fuenteTipo) " +
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
@@ -43,7 +43,7 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Long> {
             @Param("delta") Float delta,
             @Param("curado") Boolean curado,
             @Param("texto") String texto,
-            @Param("tipoDeFuente") String tipoDeFuente
+            @Param("fuenteTipo") String fuenteTipo
     );
 
     // Nuevo: búsqueda de colecciones con filtros opcionales

@@ -24,6 +24,7 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             "AND (:acaHasta IS NULL OR h.fecha <= :acaHasta) " +
             "AND (h.estado  IS NULL OR h.estado <> ar.utn.ba.ddsi.apipublica.models.entities.EnumEstadoHecho.BAJA) "+            // Para coordenadas: si ambas son NULL entonces no filtra; si no, compara con un rango (ej. ~1km -> 0.01 grados aprox)
             "AND (:prov IS NULL OR (h.ubicacion IS NOT NULL AND LOWER(h.ubicacion.provincia.nombre) = LOWER(:prov))) " +
+            "AND (:tipoFuente IS NULL OR h.fuente IS NOT NULL AND STR(h.fuente.tipoFuente) = :tipoFuente) " +
             "AND (:texto IS NULL OR (" +
                 "LOWER(h.titulo) LIKE LOWER(CONCAT('%', :texto, '%')) " +
                 "OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) " +
@@ -38,6 +39,7 @@ public interface HechoRepository extends JpaRepository<Hecho, Long> {
             @Param("prov") String prov,
             @Param("delta") Float delta,
             @Param("texto") String texto,
+            @Param("tipoFuente") String tipoFuente,
             Pageable pageable
     );
 

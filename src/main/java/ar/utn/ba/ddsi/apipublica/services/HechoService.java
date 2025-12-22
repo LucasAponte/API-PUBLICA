@@ -175,6 +175,7 @@ public class HechoService implements IHechoService {
                     filter.getProvincia(),
                     delta,
                     textoLibre,
+                    filter.getTipoFuente(),
                     pageable // Pasamos el pageable al repo
             );
         }
