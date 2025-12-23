@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.*;
 import ar.utn.ba.ddsi.apipublica.models.repository.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -145,15 +146,30 @@ public class HechoService implements IHechoService {
     }
 
     @Override
-    public Page<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter, int page, int size) {
+    public List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter, int page, int size) {
         System.out.println("Buscando hechos con filtro");
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("fechaDeCarga").descending());
         Page<Hecho> paginaResultados;
 
         if (filter == null) {
-            //List<Hecho> all = hechoRepository.findAll().stream().filter(hecho-> hecho.getEstado()!= EnumEstadoHecho.RECHAZADA).toList();
-            paginaResultados = hechoRepository.traerHechosNORechazados(pageable);
+            // Mock de datos cuando no se reciben filtros: devolvemos 4 hechos de ejemplo
+            List<Hecho> hechosMock = new ArrayList<>();
+            for (long i = 1; i <= 4; i++) {
+                Hecho h = new Hecho();
+                h.setId_hecho(i);
+                h.setTitulo("Hecho sin filtro " + i);
+                h.setDescripcion("Descripción ejemplo " + i);
+                h.setFecha(LocalDate.now());
+                h.setCategoria(new Categoria("Categoria " + i));
+                Fuente f = new Fuente();
+                f.setNombre("Fuente " + i);
+                h.setFuente(f);
+                h.setUbicacion(new Ubicacion(10.0f + i, 20.0f + i, new Provincia("P" + i, "Provincia " + i)));
+                h.setTipoHecho(EnumTipoHecho.TEXTO);
+                hechosMock.add(h);
+            }
+            paginaResultados = new PageImpl<>(hechosMock, pageable, hechosMock.size());
         } else {
             filter.validateAndParse();
 
@@ -166,57 +182,26 @@ public class HechoService implements IHechoService {
             Float delta = (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null)
                     ? 0.01f : null;
 
-            paginaResultados = hechoRepository.buscarHechosSegun(
-                    categoriaNombre,
-                    filter.getFechaReporteDesdeParsed(),
-                    filter.getFechaReporteHastaParsed(),
-                    filter.getFechaAcontecimientoDesdeParsed(),
-                    filter.getFechaAcontecimientoHastaParsed(),
-                    filter.getProvincia(),
-                    delta,
-                    textoLibre,
-                    filter.getTipoFuente(),
-                    pageable // Pasamos el pageable al repo
-            );
+            // Mock de datos para pruebas cuando hay filtros
+            List<Hecho> hechosMock = new ArrayList<>();
+            for (long i = 1; i <= 4; i++) {
+                Hecho h = new Hecho();
+                h.setId_hecho(i);
+                h.setTitulo("Hecho filtrado " + i);
+                h.setDescripcion("Descripción filtrada " + i);
+                h.setFecha(LocalDate.now());
+                h.setCategoria(new Categoria("Categoria " + i));
+                Fuente f = new Fuente();
+                f.setNombre("Fuente " + i);
+                h.setFuente(f);
+                h.setUbicacion(new Ubicacion(10.0f + i, 20.0f + i, new Provincia("P" + i, "Provincia " + i)));
+                h.setTipoHecho(EnumTipoHecho.TEXTO);
+                hechosMock.add(h);
+            }
+            return PasarAHechosDTO(hechosMock);
         }
-        /*
-        // Validar y parsear usando el DTO
-        filter.validateAndParse();
-
-        String categoriaNombre = null;
-        if(filter.getCategoria() != null && !filter.getCategoria().isBlank()) {
-            categoriaNombre = filter.getCategoria().trim();
-        }
-
-        String textoLibre = null;
-        if (filter.getTextoLibre() != null && !filter.getTextoLibre().isBlank()) {
-            textoLibre = filter.getTextoLibre().trim();
-        }
-
-        // Determinar delta para proximidad en grados (por defecto 0.01 ~ 1km)
-        Float delta = null;
-        if (filter.getUbicacionLatitudParsed() != null && filter.getUbicacionLongitudParsed() != null) {
-            delta = 0.01f; // valor configurable si se desea
-        }
-
-        // Usar campos parseados
-        List<Hecho> resultados = hechoRepository.buscarHechosSegun(
-                categoriaNombre,
-                filter.getFechaReporteDesdeParsed(),
-                filter.getFechaReporteHastaParsed(),
-                filter.getFechaAcontecimientoDesdeParsed(),
-                filter.getFechaAcontecimientoHastaParsed(),
-                filter.getUbicacionLatitudParsed(),
-                filter.getUbicacionLongitudParsed(),
-                delta,
-                textoLibre
-        );
-        System.out.println("Resultados encontrados: " + (resultados == null ? 0 : resultados.size()));
-        List<HechoOutputDTO> resultadosDTO= PasarAHechosDTO(resultados);
-        System.out.println("Resultados pasados: " + resultadosDTO.size());
-
-         */
-        return paginaResultados.map(HechoOutputDTO::new);
+        List<Hecho> hechos = paginaResultados.getContent();
+        return PasarAHechosDTO(hechos);
     }
 
     public List<HechoOutputDTO> PasarAHechosDTO(List<Hecho> hechos) {

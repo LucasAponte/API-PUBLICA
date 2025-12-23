@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IHechoService {
-    Page<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter, int page, int size);
+    List<HechoOutputDTO> buscarConFiltro(HechoFilterDTO filter, int page, int size);
 
     Hecho crearHecho(HechoCreateDTO dto);
 
