@@ -5,6 +5,13 @@ import ar.utn.ba.ddsi.apipublica.models.dtos.HechoFilterDTO;
 import ar.utn.ba.ddsi.apipublica.models.dtos.HechoOutputDTO;
 import ar.utn.ba.ddsi.apipublica.models.entities.Hecho;
 import ar.utn.ba.ddsi.apipublica.services.IHechoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +22,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/hechos")
 @CrossOrigin(origins = "http://localhost:3000")
+@Tag(
+        name = "Hechos",
+        description = "Endpoints para la creación y consulta de hechos"
+)
 public class HechoController {
 
     private final IHechoService hechoService;
@@ -24,7 +35,38 @@ public class HechoController {
     }
 
     @PostMapping//ResponseEntity???
-    public ResponseEntity<?> crearHecho(@RequestBody HechoCreateDTO dto) {
+    @Operation(
+            summary = "Crear un hecho",
+            description = "Crea un nuevo hecho en el sistema"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Hecho creado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Hecho.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos inválidos (el título es obligatorio)"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
+    public ResponseEntity<?> crearHecho(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos necesarios para crear un hecho",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = HechoCreateDTO.class)
+                    )
+            )
+            @RequestBody HechoCreateDTO dto) {
         if (dto == null || dto.getTitulo() == null || dto.getTitulo().isBlank()) {
             return ResponseEntity.badRequest().body("Titulo es obligatorio");
         }
@@ -39,16 +81,48 @@ public class HechoController {
     //GET /hechos con filtros por query params
     @GetMapping
     @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
+    @Operation(
+            summary = "Buscar hechos",
+            description = "Devuelve un listado paginado de hechos aplicando filtros opcionales"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Listado de hechos obtenido correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = HechoOutputDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parámetros de búsqueda inválidos"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
     public ResponseEntity<?> listarHechosSegun(
+            @Parameter(description = "Categoría del hecho", example = "Política")
             @RequestParam(value = "categoria", required = false) String categoria,
+            @Parameter(description = "Fecha de reporte desde (YYYY-MM-DD)", example = "2024-01-01")
             @RequestParam(value = "fecha_reporte_desde", required = false) String fechaReporteDesde,
+            @Parameter(description = "Fecha de reporte hasta (YYYY-MM-DD)", example = "2024-12-31")
             @RequestParam(value = "fecha_reporte_hasta", required = false) String fechaReporteHasta,
+            @Parameter(description = "Fecha de acontecimiento desde", example = "2023-01-01")
             @RequestParam(value = "fecha_acontecimiento_desde", required = false) String fechaAcontecimientoDesde,
+            @Parameter(description = "Fecha de acontecimiento hasta", example = "2023-12-31")
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false) String fechaAcontecimientoHasta,
+            @Parameter(description = "Provincia del hecho", example = "Córdoba")
             @RequestParam(value = "provincia", required = false) String provincia,
+            @Parameter(description = "Texto libre (título, descripción, fuente)", example = "elecciones")
             @RequestParam(value = "q", required = false) String textoLibre, //Titulo,Descripcion,Fuente, esasa cosas son las que busca el texto libre
+            @Parameter(description = "Tipo de fuente", example = "OFICIAL")
             @RequestParam(value = "tipoFuente", required=false) String tipoFuente,
+            @Parameter(description = "Número de página", example = "0")
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamaño de página", example = "10")
             @RequestParam(defaultValue = "10") int size)
     {
 
@@ -67,7 +141,35 @@ public class HechoController {
     }
     @GetMapping("/{id}")
     @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
-    public ResponseEntity<Object> obtenerHecho(@PathVariable("id") Long id) {
+    @Operation(
+            summary = "Obtener hecho por ID",
+            description = "Devuelve un hecho específico a partir de su identificador"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Hecho encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = HechoOutputDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Hecho no encontrado"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
+    public ResponseEntity<Object> obtenerHecho(
+            @Parameter(
+                    description = "ID del hecho",
+                    example = "100",
+                    required = true
+            )
+            @PathVariable("id") Long id) {
         try {
             HechoOutputDTO hechoDTO = hechoService.obtenerHechoPorId(id);
             return ResponseEntity.status(HttpStatus.OK).body(hechoDTO);
