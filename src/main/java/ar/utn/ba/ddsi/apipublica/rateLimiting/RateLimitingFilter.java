@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
-    private static final int MAX_REQUESTS = 60;
+    private static final int MAX_REQUESTS = 5;
     private static final long WINDOW_MS = 60_000;
 
-    private final Map<String, RequestCounter> counters = new ConcurrentHashMap<>();
+    private final Map<String, RequestCounter> requestsPorIp = new ConcurrentHashMap<>();
 
     @Override
     protected void doFilterInternal(
@@ -26,22 +26,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String ip = request.getRemoteAddr();
+        String ip = obtenerIp(request);
         long now = System.currentTimeMillis();
 
-        RequestCounter counter = counters.computeIfAbsent(ip, k -> new RequestCounter(now));
+        RequestCounter counter = requestsPorIp.get(ip);
 
-        synchronized (counter) {
-            if (now - counter.windowStart > WINDOW_MS) {
-                counter.windowStart = now;
-                counter.count = 0;
-            }
-
+        if (counter == null || now - counter.windowStart > WINDOW_MS) {
+            requestsPorIp.put(ip, new RequestCounter(now));
+        } else {
             counter.count++;
-
             if (counter.count > MAX_REQUESTS) {
                 response.setStatus(429);
-                response.getWriter().write("Too many requests");
+                response.getWriter().write("Rate limit excedido");
                 return;
             }
         }
@@ -49,13 +45,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private static class RequestCounter {
-        long windowStart;
-        int count;
+    private String obtenerIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        return ip != null ? ip.split(",")[0] : request.getRemoteAddr();
+    }
 
-        RequestCounter(long windowStart) {
-            this.windowStart = windowStart;
-            this.count = 0;
+    private static class RequestCounter {
+        int count;
+        long windowStart;
+
+        RequestCounter(long now) {
+            this.count = 1;
+            this.windowStart = now;
         }
     }
 }
