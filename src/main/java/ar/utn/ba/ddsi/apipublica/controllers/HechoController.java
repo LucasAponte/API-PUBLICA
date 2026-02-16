@@ -48,8 +48,8 @@ public class HechoController {
             @RequestParam(value = "provincia", required = false) String provincia,
             @RequestParam(value = "q", required = false) String textoLibre, //Titulo,Descripcion,Fuente, esasa cosas son las que busca el texto libre
             @RequestParam(value = "tipoFuente", required=false) String tipoFuente,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size)
+            @RequestParam(value = "page", required = false) int page,
+            @RequestParam(value = "size", required = false) int size)
     {
 
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -91,14 +93,14 @@ public class ControllerGQL {
             @Argument String fecha_acontecimiento_hasta,
             @Argument String provincia,
             @Argument String q,
-            @Argument String tipoFuente,
+            @Argument String fuenteTipo,
             @Argument int page,
             @Argument int size
     ) {
         HechoFilterDTO filter = new HechoFilterDTO(
                 categoria, fecha_reporte_desde, fecha_reporte_hasta,
                 fecha_acontecimiento_desde, fecha_acontecimiento_hasta,
-                provincia, q, tipoFuente
+                provincia, q, fuenteTipo
         );
         return hechoService.buscarConFiltro(filter, page, size);
     }

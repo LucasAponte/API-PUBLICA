@@ -32,9 +32,9 @@ type Query {
         fecha_acontecimiento_hasta: String
         provincia: String
         q: String
-        tipoFuente: String
-        page: Int = 0
-        size: Int = 10
+        fuenteTipo: String
+        page: Int
+        size: Int
     ): HechoPage
 
     obtenerHecho (id: ID!): HechoOutputDTO
@@ -85,8 +85,7 @@ type UbicacionOutputDTO {
 type HechoPage {
     content: [HechoOutputDTO]
     totalPages: Int
-    page: Int
-    size: Int
+    totalElements: Int
 }
 
 type AdjuntoDTO {
