@@ -15,12 +15,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/colecciones")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -87,14 +89,9 @@ public class ColeccionController {
     ) {
         ColeccionFilterDTO filter = new ColeccionFilterDTO(titulo, descripcion, tipoAlgoritmo, fuenteId);
 
-        try {
+
             List<ColeccionOutputDTO> colecciones = coleccionService.buscarColeccionesSegun(filter);
             return ResponseEntity.status(HttpStatus.OK).body(colecciones);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("Error buscando colecciones: " + ex.getMessage());
-        }
     }
 
     @GetMapping("/{coleccionID}/hechos")
@@ -155,18 +152,19 @@ public class ColeccionController {
             @RequestParam(value = "fuenteTipo", required = false) String fuenteTipo)
 
     {
+        log.info("Buscando hechos de una coleccion con Id : {} " , coleccionID);
+        log.debug("Parámetros recibidos - modoNavegacion: {}, categoria: {}, fechaReporteDesde: {}, fechaReporteHasta: {}, fechaAcontecimientoDesde: {}, fechaAcontecimientoHasta: {}, provincia: {}, textoLibre: {}, fuenteTipo: {}",
+                modoNavegacion, categoria, fechaReporteDesde, fechaReporteHasta, fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre, fuenteTipo);
+
         ColeccionOutputDTO cole =  coleccionService.buscarColeccionPorId(coleccionID);
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,fuenteTipo);
-        try {
+
             List<HechoOutputDTO> resultados = coleccionService.buscarHechosSegun(filter, modoNavegacion, coleccionID);
+            log.info("Resultados obtenidos para colección ID {}: {} hechos encontrados", coleccionID, resultados.size());
             cole.setHechos(resultados);
             return ResponseEntity.status(HttpStatus.OK).body(cole);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(400).body("Error en los parámetros de búsqueda: " + iae.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
-        }
+
     }
     @GetMapping("/{coleccionID}")
     @CrossOrigin(origins = "http://localhost:3000")
@@ -200,19 +198,11 @@ public class ColeccionController {
             )
             @PathVariable("coleccionID") Long coleccionID) {
 
-        try {
+
             ColeccionOutputDTO coleccion = coleccionService.buscarColeccionPorId(coleccionID);
 
-            if (coleccion == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("La colección con ID " + coleccionID + " no existe");
-            }
 
             return ResponseEntity.ok(coleccion);
 
-        } catch (Exception ex) {
-            return ResponseEntity.status(500)
-                    .body("Error obteniendo la colección: " + ex.getMessage());
-        }
     }
 }

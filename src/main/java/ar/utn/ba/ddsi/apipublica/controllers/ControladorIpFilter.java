@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.apipublica.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Map;
  * controlador p/ consultar el estado del filtro de ips
  * mas para debugging y verificacion de la configuracion
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/ip-filter")
 public class ControladorIpFilter {
@@ -32,6 +34,8 @@ public class ControladorIpFilter {
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getStatus() {
+
+        log.info("Consulta de estado del filtro de IPs. enabled={}", filterEnabled);
         Map<String, Object> status = new HashMap<>();
         status.put("enabled", filterEnabled);
         status.put("whitelist", parseIpList(whitelistConfig));
@@ -45,7 +49,12 @@ public class ControladorIpFilter {
     @GetMapping("/check/{ip}")
     public ResponseEntity<Map<String, Object>> checkIp(@PathVariable String ip) {
         // Limpiar la IP de espacios y saltos de línea
+
+
         String cleanIp = ip.trim().replace("\n", "").replace("\r", "");
+
+        // DEBUG: útil durante desarrollo para ver qué IP llegó
+        log.debug("Verificando IP: original='{}', limpia='{}'", ip, cleanIp);
 
         Map<String, Object> result = new HashMap<>();
         result.put("ip", cleanIp);
@@ -60,12 +69,15 @@ public class ControladorIpFilter {
         List<String> blacklist = parseIpList(blacklistConfig);
 
         if (!blacklist.isEmpty() && blacklist.contains(cleanIp)) {
+            log.warn("IP BLOQUEADA por blacklist: {}", cleanIp);
             result.put("status", "BLOCKED");
             result.put("reason", "IP en lista negra (blacklist)");
         } else if (!whitelist.isEmpty() && !whitelist.contains(cleanIp)) {
+            log.warn("IP BLOQUEADA por whitelist: {}", cleanIp);
             result.put("status", "BLOCKED");
             result.put("reason", "IP no está en lista blanca (whitelist)");
         } else {
+            log.info("IP permitida: {}", cleanIp);
             result.put("status", "ALLOWED");
             result.put("reason", "IP permitida");
         }

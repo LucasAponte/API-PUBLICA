@@ -12,13 +12,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/hechos")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -66,16 +71,14 @@ public class HechoController {
                             schema = @Schema(implementation = HechoCreateDTO.class)
                     )
             )
-            @RequestBody HechoCreateDTO dto) {
+            @Valid @RequestBody HechoCreateDTO dto) {
         if (dto == null || dto.getTitulo() == null || dto.getTitulo().isBlank()) {
             return ResponseEntity.badRequest().body("Titulo es obligatorio");
         }
-        try {
+
             Hecho hecho = hechoService.crearHecho(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(hecho);
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("Error creando hecho: " + ex.getMessage());
-        }
+
     }
 
     //GET /hechos con filtros por query params
@@ -125,22 +128,19 @@ public class HechoController {
             @Parameter(description = "Tamaño de página", example = "10")
             @RequestParam(defaultValue = "10") int size)
     {
-
+        log.info("Obtener hechos con filtros ");
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, provincia, textoLibre,tipoFuente);
         System.out.println(filter.getCategoria());
-        try {
+       log.info("Empezando busqueda filtrada ");
+
             Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
+            log.debug("Se encontraron {} hechos para los filtros aplicados", resultados.getTotalElements());
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.badRequest().body(iae.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("Error buscando hechos: " + ex.getMessage());
-        }
     }
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
+    @CrossOrigin(origins = "http://localhost:3000") 
     @Operation(
             summary = "Obtener hecho por ID",
             description = "Devuelve un hecho específico a partir de su identificador"
@@ -169,18 +169,10 @@ public class HechoController {
                     example = "100",
                     required = true
             )
-            @PathVariable("id") Long id) {
-        try {
+            @NotBlank @PathVariable("id") Long id) {
+
             HechoOutputDTO hechoDTO = hechoService.obtenerHechoPorId(id);
             return ResponseEntity.status(HttpStatus.OK).body(hechoDTO);
 
-        } catch (RuntimeException ex) {
-            // Asumimos que si salta la excepción del service es porque no existe (404)
-            // Podrías refinar esto creando una excepción personalizada 'ResourceNotFoundException'
-            if (ex.getMessage().contains("no encontrado")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error obteniendo el hecho: " + ex.getMessage());
-        }
     }
 }

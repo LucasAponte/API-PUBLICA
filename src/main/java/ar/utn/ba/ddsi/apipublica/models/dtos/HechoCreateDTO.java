@@ -1,15 +1,25 @@
 package ar.utn.ba.ddsi.apipublica.models.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
 public class HechoCreateDTO {
+    @NotBlank
     private String titulo;
-    private String descripcion;
+    @NotBlank
+    private String descripcion;@NotBlank
+    @NotBlank
     private String fecha; // ISO yyyy-MM-dd
+    @NotBlank
     private String categoria; // id o nombre
+    @NotBlank
     private String fuente; // id
+    @NotBlank
     private String ubicacionLat; // latitud como string
+    @NotBlank
     private String ubicacionLon; // longitud como string
+    @NotBlank
     private String tipoHecho; // enum name
     private List<String> adjuntos; // lista de urls
 

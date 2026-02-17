@@ -8,11 +8,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/solicitudes")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -39,24 +42,19 @@ public class SolicitudController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudCreateDTO dto) {
-        try {
-            System.out.println("Iniciando solicitud" + dto.getIdContribuyente() + " - " + dto.getIdHecho()
-            + " - " + dto.getMotivo());
-            //ACÄ funca pero debería poder controlar si esiste o no el idcontribuyente por ahora safa
+    public ResponseEntity<?> crearSolicitud( @RequestBody SolicitudCreateDTO dto) {
+
+
+            log.info("Iniciando solicitud - Contribuyente ID: {}, Hecho ID: {}",dto.getIdContribuyente(), dto.getIdHecho());
             SolicitudEliminacion solicitud = solicitudService.crearSolicitud(dto);
             SolicitudOutputDTO solicitudOutputDTO = new SolicitudOutputDTO(solicitud);
-            System.out.println(solicitudOutputDTO);
+           log.info("Solicitud creada exitosamente - ID: {}", solicitud.getId_solicitud());
             return ResponseEntity.ok(solicitudOutputDTO);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body("Error interno");
-        }
+
     }
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000") // ⬅️ Añadir esto
+    @CrossOrigin(origins = "http://localhost:3000")
     @Operation(
             summary = "Listar solicitudes",
             description = "Devuelve todas las solicitudes de eliminación registradas"
