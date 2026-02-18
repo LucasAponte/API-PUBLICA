@@ -66,7 +66,10 @@ public class ColeccionService {
                 tipoDeFuente = filter.getTipoFuente().trim();
             }
 
-            if (modoDeNavegacion.equalsIgnoreCase("CURADA")) {
+            // Evitar NPE: normalizar modoDeNavegacion
+            String modo = (modoDeNavegacion == null) ? "" : modoDeNavegacion.trim();
+
+            if (modo.equalsIgnoreCase("CURADA") || modo.equalsIgnoreCase("CURADO")) {
                 curado = Boolean.TRUE;
                 log.info("Modo de navegación CURADA: buscando solo hechos consensuados en la colección");
                 return PasarAHechosDTO(coleccionRepository.buscarEnColeccionSegun(

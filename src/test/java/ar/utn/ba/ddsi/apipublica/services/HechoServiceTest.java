@@ -13,14 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,48 +51,50 @@ class HechoServiceTest {
                 "2024-01-31",
                 "2023-12-01",
                 "2023-12-31",
-                "-34.55",
-                "-58.49",
-                "  fraude  "
+                null,
+                "  fraude  ",
+                "TIPO"
         );
 
-        // Mock: el repositorio devuelve una lista de Hecho; el servicio la convertirá a DTOs
+        // Mock: el repositorio devuelve una página de Hecho; el servicio la convertirá a DTOs
         List<Hecho> expected = List.of(new Hecho());
-        when(hechoRepository.buscarHechosSegun(
-                any(), any(), any(), any(), any(), any(), any(), any(), any()
-        )).thenReturn(expected);
+        lenient().when(hechoRepository.buscarHechosSegun(
+                any(), any(), any(), any(), any(), any(), any(), any(), any(), any(Pageable.class)
+        )).thenReturn(new PageImpl<>(expected));
 
-        List<HechoOutputDTO> result = hechoService.buscarConFiltro(filter);
+        Page<HechoOutputDTO> resultPage = hechoService.buscarConFiltro(filter, 0, 10);
+        List<HechoOutputDTO> result = resultPage.getContent();
 
         // ahora el servicio devuelve DTOs, así que comprobamos tamaño y tipo
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.get(0) instanceof HechoOutputDTO);
 
-        // Verificar que el repositorio fue llamado con los valores parseados correctos (9 argumentos)
+        // Verificar que el repositorio fue llamado con los valores parseados correctos
         verify(hechoRepository).buscarHechosSegun(
                 eq("Seguridad"),
                 eq(LocalDate.parse("2024-01-01")),
                 eq(LocalDate.parse("2024-01-31")),
                 eq(LocalDate.parse("2023-12-01")),
                 eq(LocalDate.parse("2023-12-31")),
-                eq(-34.55f),
-                eq(-58.49f),
-                eq(0.01f),       // delta por defecto definido en el servicio
-                eq("fraude")
+                isNull(),               // provincia en este caso null
+                isNull(),              // delta por defecto es null porque no se pasaron coordenadas
+                eq("fraude"),
+                eq("TIPO"),
+                any(Pageable.class)
         );
     }
 
     // confirma que sin filtros consulta todos los hechos
     @Test
     void buscarConFiltroSinParametrosRecuperaTodo() {
-        when(hechoRepository.findAll()).thenReturn(Collections.emptyList());
+        when(hechoRepository.traerHechosNORechazados(any(Pageable.class))).thenReturn(Page.empty());
 
-        List<HechoOutputDTO> result = hechoService.buscarConFiltro(null);
+        Page<HechoOutputDTO> resultPage = hechoService.buscarConFiltro(null, 0, 10);
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(hechoRepository, times(1)).findAll();
+        assertNotNull(resultPage);
+        assertTrue(resultPage.isEmpty());
+        verify(hechoRepository, times(1)).traerHechosNORechazados(any(Pageable.class));
     }
 
     // asegura que fechas invalidas lanzan error antes de ir al repositorio
@@ -107,12 +111,12 @@ class HechoServiceTest {
                 null
         );
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> hechoService.buscarConFiltro(filter));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> hechoService.buscarConFiltro(filter, 0, 10));
         assertTrue(ex.getMessage().toLowerCase().contains("formato") || ex.getMessage().toLowerCase().contains("fecha"));
 
-        // Asegurarnos que no se llamó al repo con 9 argumentos
+        // Asegurarnos que no se llamó al repo con la firma paginada
         verify(hechoRepository, times(0)).buscarHechosSegun(
-                any(), any(), any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(), any(), any(), any(), any(Pageable.class)
         );
     }
 }

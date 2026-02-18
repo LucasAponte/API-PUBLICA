@@ -38,9 +38,8 @@ class ColeccionServiceTest {
                 .thenReturn(Optional.of(new Coleccion()));
 
         // Devuelve lista de entidades, luego el service las convierte a DTOs
-        when(coleccionRepository.buscarEnColeccionSegun(
-                any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any()
+        lenient().when(coleccionRepository.buscarEnColeccionIrrestricta(
+                anyLong(), any(), any(), any(), any(), any(), any(), any(), any(), any()
         )).thenReturn(List.of(new Hecho()));
 
         HechoFilterDTO filter = new HechoFilterDTO(
@@ -61,17 +60,16 @@ class ColeccionServiceTest {
         assertEquals(1, result.size());
         assertTrue(result.get(0) instanceof HechoOutputDTO);
 
-        verify(coleccionRepository).buscarEnColeccionSegun(
+        verify(coleccionRepository).buscarEnColeccionIrrestricta(
                 eq(42L),
                 eq("Salud"),
                 eq(LocalDate.parse("2024-02-01")),
                 eq(LocalDate.parse("2024-02-28")),
                 isNull(),
                 isNull(),
-                isNull(),
-                isNull(),
+                isNull(),     // provincia
                 isNull(),     // delta
-                eq(false),    // curado = FALSE
+                isNull(),
                 eq("vacuna")
         );
     }
@@ -84,9 +82,8 @@ class ColeccionServiceTest {
         when(coleccionRepository.findById(coleccionId))
                 .thenReturn(Optional.of(new Coleccion()));
 
-        when(coleccionRepository.buscarEnColeccionSegun(
-                any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any()
+        lenient().when(coleccionRepository.buscarEnColeccionSegun(
+                anyLong(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
         )).thenReturn(List.of());
 
         HechoFilterDTO filter = new HechoFilterDTO();
@@ -104,25 +101,31 @@ class ColeccionServiceTest {
                 isNull(),
                 isNull(),
                 isNull(),
-                isNull(),
                 curadoCaptor.capture(),
+                isNull(),
                 isNull()
         );
 
         assertEquals(Boolean.TRUE, curadoCaptor.getValue());
     }
 
-    /*** 3) Modo inválido dispara excepción ***/
+    /*** 3) Modo inválido: se interpreta como irrrestricto (comportamiento actual) ***/
     @Test
-    void buscarHechosSegunLanzaErrorModoInvalido() {
+    void buscarHechosSegunModoInvalidoSeInterpretaComoIrrestricta() {
         Long coleccionId = 9L;
         when(coleccionRepository.findById(coleccionId))
                 .thenReturn(Optional.of(new Coleccion()));
 
+        lenient().when(coleccionRepository.buscarEnColeccionIrrestricta(
+                anyLong(), any(), any(), any(), any(), any(), any(), any(), any(), any()
+        )).thenReturn(List.of());
+
         HechoFilterDTO filter = new HechoFilterDTO();
 
-        assertThrows(IllegalArgumentException.class,
-                () -> coleccionService.buscarHechosSegun(filter, "XXXX", coleccionId));
+        // No debe lanzar excepción; simplemente se usará la búsqueda irrrestricta
+        coleccionService.buscarHechosSegun(filter, "XXXX", coleccionId);
+
+        verify(coleccionRepository).buscarEnColeccionIrrestricta(eq(9L), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull());
     }
 
     /*** 4) Colección inexistente lanza error ***/
@@ -144,9 +147,8 @@ class ColeccionServiceTest {
         when(coleccionRepository.findById(id))
                 .thenReturn(Optional.of(new Coleccion()));
 
-        when(coleccionRepository.buscarEnColeccionSegun(
-                any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any()
+        lenient().when(coleccionRepository.buscarEnColeccionIrrestricta(
+                anyLong(), any(), any(), any(), any(), any(), any(), any(), any(), any()
         )).thenReturn(List.of());
 
         List<HechoOutputDTO> result =
