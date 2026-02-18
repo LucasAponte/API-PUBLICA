@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/provincias")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
 @Tag(
         name = "Provincias",
         description = "Endpoints para la consulta de provincias"

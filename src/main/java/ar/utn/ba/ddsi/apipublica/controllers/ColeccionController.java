@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/colecciones")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app/")
 @Tag(
         name = "Colecciones",
         description = "Endpoints para la consulta de colecciones y hechos asociados"
@@ -39,7 +39,7 @@ public class ColeccionController {
     }
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Buscar colecciones",
             description = "Permite buscar colecciones aplicando distintos filtros opcionales"
@@ -95,7 +95,7 @@ public class ColeccionController {
     }
 
     @GetMapping("/{coleccionID}/hechos")
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Listar hechos de una colección",
             description = "Devuelve una colección con sus hechos asociados, aplicando filtros opcionales"
@@ -167,7 +167,7 @@ public class ColeccionController {
 
     }
     @GetMapping("/{coleccionID}")
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Obtener colección por ID",
             description = "Devuelve una colección específica a partir de su identificador"
