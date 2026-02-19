@@ -94,8 +94,8 @@ public class ControllerGQL {
             @Argument String provincia,
             @Argument String q,
             @Argument String fuenteTipo,
-            @Argument int page,
-            @Argument int size
+            @Argument Integer page,
+            @Argument Integer size
     ) {
         HechoFilterDTO filter = new HechoFilterDTO(
                 categoria, fecha_reporte_desde, fecha_reporte_hasta,
