@@ -7,8 +7,14 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 @Slf4j
 public abstract class AbstractDependencyHealthIndicator implements HealthIndicator {
 
+    private boolean forceDown = false;
+
     @Override
     public Health health() {
+        if (forceDown) {
+            log.warn("Estado DOWN forzado por un ADMIN para '{}'", dependencyName());
+            return markDown();
+        }
         try {
             if (estaDisponible()) {
                 return markUp();
@@ -40,5 +46,17 @@ public abstract class AbstractDependencyHealthIndicator implements HealthIndicat
         return Health.up()
                 .withDetail(dependencyName(), "OK")
                 .build();
+    }
+    public void forceDown() {
+        log.warn("Forzando estado DOWN para '{}'", dependencyName());
+        this.forceDown= true;
+        // En este diseño, el estado forzado se maneja a través de un flag que se verifica en el método health()
+        // Esto permite que el estado forzado persista hasta que se recupere manualmente o se reinicie el servicio
+    }
+    public void recover(){
+        log.info("Recuperando estado para '{}'", dependencyName());
+        this.forceDown= false;
+        // En este diseño, la recuperación se maneja a través de un método que podría resetear el flag de forzado
+        // y permitir que el health check normal vuelva a determinar el estado real de la dependencia
     }
 }

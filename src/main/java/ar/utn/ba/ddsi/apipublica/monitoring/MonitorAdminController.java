@@ -1,11 +1,12 @@
 package ar.utn.ba.ddsi.apipublica.monitoring;
 
 import ar.utn.ba.ddsi.apipublica.monitoring.healthindicators.DatabaseHealthIndicator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/monitor")
 public class MonitorAdminController {
@@ -24,7 +25,9 @@ public class MonitorAdminController {
 
     @PostMapping("/fail/database")
     public void failDatabase() {
-        database.markDown();
+
+        log.info("Simulando falla en la base de datos");
+        database.forceDown();
     }
 
 
@@ -32,6 +35,7 @@ public class MonitorAdminController {
 
     @PostMapping("/recover/all")
     public void recoverAll() {
-        database.markUp();
+        log.info("Simulando recuperación de todas las dependencias");
+        database.recover();
     }
 }
