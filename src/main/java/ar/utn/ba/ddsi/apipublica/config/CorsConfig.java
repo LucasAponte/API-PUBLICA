@@ -15,7 +15,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 // Habilitar CORS específicamente para el endpoint de GraphQL
                 registry.addMapping("/graphql/**")
-                        .allowedOrigins("http://localhost:3000") // El puerto de tu React
+                        .allowedOrigins("https://front-metamapa-lo3l.vercel.app") // El puerto de tu React
                         .allowedMethods("GET", "POST", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
