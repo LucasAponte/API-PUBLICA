@@ -124,9 +124,9 @@ public class HechoController {
             @Parameter(description = "Tipo de fuente", example = "OFICIAL")
             @RequestParam(value = "tipoFuente", required=false) String tipoFuente,
             @Parameter(description = "Número de página", example = "0")
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false) int page,
             @Parameter(description = "Tamaño de página", example = "10")
-            @RequestParam(defaultValue = "10") int size)
+            @RequestParam(value = "size", required = false) int size)
     {
         log.info("Obtener hechos con filtros ");
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
@@ -135,7 +135,6 @@ public class HechoController {
        log.info("Empezando busqueda filtrada ");
 
             Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
-            log.debug("Se encontraron {} hechos para los filtros aplicados", resultados.getTotalElements());
             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
     }
