@@ -26,4 +26,8 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 
 # Comando para iniciar la aplicación
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 1. -XX:+UseSerialGC: Usa el recolector ligero (ahorra ~30-50MB de RAM interna)
+# 2. -Xss512k: Reduce el tamaño de la pila por hilo (ahorra memoria fuera del Heap)
+# 3. -Xmx400m: Subimos un poco el Heap (de 350 a 400) aprovechando el ahorro del SerialGC
+
+ENTRYPOINT ["java", "-XX:+UseSerialGC", "-Xss512k", "-Xmx400m", "-jar", "app.jar"]
