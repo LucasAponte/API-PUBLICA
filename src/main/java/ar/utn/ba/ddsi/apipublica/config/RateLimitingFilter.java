@@ -38,12 +38,16 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String clientIp = getClientIp(request);
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // verificar si ip esta bloqueada temporalmente
         if (isIpBlocked(clientIp)) {
             respondWithTooManyRequests(response, clientIp, "IP bloqueada temporalmente por exceder límite de solicitudes");
             return;
         }
-
         // obtener o crear info de rrl para esta ip
         RequestCounter rateLimitInfo = requestsPorIp.computeIfAbsent(clientIp, k -> new RequestCounter(WINDOW_SECONDS));
 
