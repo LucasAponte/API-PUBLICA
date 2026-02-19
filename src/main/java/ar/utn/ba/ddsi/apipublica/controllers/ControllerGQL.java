@@ -94,15 +94,17 @@ public class ControllerGQL {
             @Argument String provincia,
             @Argument String q,
             @Argument String fuenteTipo,
-            @Argument int page,
-            @Argument int size
+            @Argument Integer page,
+            @Argument Integer size
     ) {
+        int paginaActual = (page != null) ? page : 0;
+        int tamanio = (size != null) ? size : 10;
         HechoFilterDTO filter = new HechoFilterDTO(
                 categoria, fecha_reporte_desde, fecha_reporte_hasta,
                 fecha_acontecimiento_desde, fecha_acontecimiento_hasta,
                 provincia, q, fuenteTipo
         );
-        return hechoService.buscarConFiltro(filter, page, size);
+        return hechoService.buscarConFiltro(filter, paginaActual, tamanio);
     }
 
     @QueryMapping
