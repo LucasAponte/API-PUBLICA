@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/solicitudes")
-@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
 @Tag(
         name = "Solicitudes",
         description = "Gestión de solicitudes de eliminación de hechos"
@@ -32,7 +31,6 @@ public class SolicitudController {
     }
 
     @PostMapping
-    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Crear una solicitud",
             description = "Crea una solicitud de eliminación asociada a un hecho y un contribuyente"
@@ -54,7 +52,6 @@ public class SolicitudController {
     }
 
     @GetMapping
-    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Listar solicitudes",
             description = "Devuelve todas las solicitudes de eliminación registradas"
@@ -67,7 +64,6 @@ public class SolicitudController {
     }
 
     @GetMapping ("/{id}")
-    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Obtener solicitud por ID",
             description = "Devuelve el detalle de una solicitud según su identificador"

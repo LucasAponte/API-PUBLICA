@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.apipublica.config; // Ajusta el paquete si es necesario
+package ar.utn.ba.ddsi.apipublica.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +13,9 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // Habilitar CORS específicamente para el endpoint de GraphQL
-                registry.addMapping("/graphql/**")
-                        .allowedOrigins("https://front-metamapa-lo3l.vercel.app") // El puerto de tu React
-                        .allowedMethods("GET", "POST", "OPTIONS")
+                registry.addMapping("/**") // Aplica a todos los endpoints (/hechos, /categorias, etc)
+                        .allowedOrigins("https://front-metamapa-lo3l.vercel.app")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

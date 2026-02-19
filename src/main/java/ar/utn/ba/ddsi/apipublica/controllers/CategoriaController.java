@@ -20,7 +20,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/categorias")
-@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
 @Tag(
         name = "Categorías",
         description = "Endpoints para la consulta de categorías"

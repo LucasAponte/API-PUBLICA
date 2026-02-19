@@ -26,7 +26,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/hechos")
-@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
 @Tag(
         name = "Hechos",
         description = "Endpoints para la creación y consulta de hechos"
@@ -83,7 +82,6 @@ public class HechoController {
 
     //GET /hechos con filtros por query params
     @GetMapping
-    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app") // ⬅️ Añadir esto
     @Operation(
             summary = "Buscar hechos",
             description = "Devuelve un listado paginado de hechos aplicando filtros opcionales"
@@ -139,7 +137,6 @@ public class HechoController {
 
     }
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
     @Operation(
             summary = "Obtener hecho por ID",
             description = "Devuelve un hecho específico a partir de su identificador"
