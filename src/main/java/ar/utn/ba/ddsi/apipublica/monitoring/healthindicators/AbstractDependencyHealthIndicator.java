@@ -6,30 +6,52 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 
 @Slf4j
 public abstract class AbstractDependencyHealthIndicator implements HealthIndicator {
+    private boolean lastReportedDown = false;
 
     private boolean forceDown = false;
 
     @Override
     public Health health() {
+
+        // ---- Estado forzado por admin ----
         if (forceDown) {
-            log.warn("Estado DOWN forzado por un ADMIN para '{}'", dependencyName());
+            if (!lastReportedDown) {
+                log.warn("Estado DOWN forzado por ADMIN para '{}'", dependencyName());
+                lastReportedDown = true;
+            }
             return markDown();
         }
+
         try {
-            if (estaDisponible()) {
+            boolean disponible = estaDisponible();
+
+            if (disponible) {
+                if (lastReportedDown) {
+                    log.info("Dependencia '{}' recuperada", dependencyName());
+                    lastReportedDown = false;
+                }
                 return markUp();
             }
 
-            log.warn("Dependency '{}' reported DOWN: {}", dependencyName(), downMessage());
+            // Si está DOWN real
+            if (!lastReportedDown) {
+                log.warn("Dependency '{}' reported DOWN: {}", dependencyName(), downMessage());
+                lastReportedDown = true;
+            }
+
             return markDown();
 
         } catch (Exception ex) {
-            log.error("Error comprobando dependencia '{}': {}", dependencyName(), ex.getMessage(), ex);
+            if (!lastReportedDown) {
+                log.error("Error comprobando dependencia '{}': {}", dependencyName(), ex.getMessage(), ex);
+                lastReportedDown = true;
+            }
             return Health.down(ex)
                     .withDetail(dependencyName(), downMessage())
                     .build();
         }
     }
+
 
     protected abstract String dependencyName();
     protected abstract String downMessage();
