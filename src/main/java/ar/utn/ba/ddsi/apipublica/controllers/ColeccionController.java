@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/colecciones")
-@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app/")
+@CrossOrigin(origins = "https://front-metamapa-lo3l.vercel.app")
 @Tag(
         name = "Colecciones",
         description = "Endpoints para la consulta de colecciones y hechos asociados"
