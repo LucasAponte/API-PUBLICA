@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -168,7 +169,7 @@ public class HechoController {
     })
     public ResponseEntity<Object> obtenerHecho(
             @Parameter(description = "ID del hecho", required = true)
-            @NotBlank @PathVariable("id") Long id) {
+            @NotNull @PathVariable("id") Long id) {
 
             log.info("Intentando obtener el hecho con ID: {}", id);
             HechoOutputDTO hechoDTO = hechoService.obtenerHechoPorId(id);
