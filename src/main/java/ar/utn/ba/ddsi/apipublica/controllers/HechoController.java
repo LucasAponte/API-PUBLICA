@@ -160,15 +160,22 @@ public class HechoController {
             )
     })
     public ResponseEntity<Object> obtenerHecho(
-            @Parameter(
-                    description = "ID del hecho",
-                    example = "100",
-                    required = true
-            )
+            @Parameter(description = "ID del hecho", required = true)
             @NotBlank @PathVariable("id") Long id) {
 
+        try {
+            log.info("Intentando obtener el hecho con ID: {}", id);
             HechoOutputDTO hechoDTO = hechoService.obtenerHechoPorId(id);
+            log.info("Hecho obtenido correctamente de la BD, intentando enviar al frontend...");
+
             return ResponseEntity.status(HttpStatus.OK).body(hechoDTO);
 
+        } catch (Exception e) {
+            log.error("💥 ERROR FATAL AL PROCESAR EL HECHO ID {}: ", id, e);
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno: " + e.getMessage());
+        }
     }
 }
