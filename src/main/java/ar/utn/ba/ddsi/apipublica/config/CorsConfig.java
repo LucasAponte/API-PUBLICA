@@ -25,7 +25,8 @@ public class CorsConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "https://front-metamapa-lo3l.vercel.app",
                 "https://front-metamapa.vercel.app",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://front-metamapa-dun.vercel.app"
         ));
 
         // 3. Cabeceras y métodos permitidos (OPTIONS es obligatorio)
