@@ -24,6 +24,7 @@ public class CorsConfig {
         // 2. Orígenes permitidos (Tu frontend en producción y local)
         config.setAllowedOrigins(Arrays.asList(
                 "https://front-metamapa-lo3l.vercel.app",
+                "https://front-metamapa.vercel.com",
                 "http://localhost:3000"
         ));
 
