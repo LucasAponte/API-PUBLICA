@@ -122,9 +122,9 @@ public class HechoController {
             @Parameter(description = "Tipo de fuente", example = "OFICIAL")
             @RequestParam(value = "tipoFuente", required=false) String tipoFuente,
             @Parameter(description = "Número de página", example = "0")
-            @RequestParam(value = "page", required = false) int page,
+            @RequestParam(value = "page", defaultValue = "0") int page,
             @Parameter(description = "Tamaño de página", example = "10")
-            @RequestParam(value = "size", required = false) int size)
+            @RequestParam(value = "size", defaultValue = "10") int size)
     {
         log.info("Obtener hechos con filtros ");
         HechoFilterDTO filter = new HechoFilterDTO(categoria, fechaReporteDesde, fechaReporteHasta,
@@ -132,8 +132,15 @@ public class HechoController {
         System.out.println(filter.getCategoria());
        log.info("Empezando busqueda filtrada ");
 
-            Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
-            return ResponseEntity.status(HttpStatus.OK).body(resultados);
+        // Validaciones de paginacion para evitar requests abusivos
+        if (page < 0) page = 0;
+        if (size <= 0) size = 10;
+        if (size > 100) size = 100; // tope maximo razonable
+
+        log.debug("Listar hechos page={} size={}", page, size);
+
+             Page<HechoOutputDTO> resultados = hechoService.buscarConFiltro(filter, page, size);
+             return ResponseEntity.status(HttpStatus.OK).body(resultados);
 
     }
     @GetMapping("/{id}")
